@@ -25,4 +25,5 @@ namespace ChessV2
             InitializeComponent();
         }
     }
+
 }
