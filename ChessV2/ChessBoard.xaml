@@ -1,0 +1,464 @@
+﻿<Page x:Class="ChessV2.ChessBoard"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ChessV2"
+      mc:Ignorable="d" 
+      d:DesignHeight="800" d:DesignWidth="800"
+      Title="ChessBoard">
+
+    <Page.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid Background="{TemplateBinding Background}">
+                            <ContentPresenter />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
+
+    <Grid>
+
+        <Grid x:Name="Board" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid.Background>
+                <ImageBrush ImageSource="{Binding BoardImage}"/>
+            </Grid.Background>
+            <!--Row 0-->
+            <Button Name="Button00"  Grid.Row="0" Grid.Column="0" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="0">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[0]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[0]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button01"  Grid.Row="0" Grid.Column="1" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="1">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[1]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[1]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button02"  Grid.Row="0" Grid.Column="2" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="2">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[2]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[2]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button03"  Grid.Row="0" Grid.Column="3" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="3">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[3]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[3]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button04"  Grid.Row="0" Grid.Column="4" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="4">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[4]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[4]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button05"  Grid.Row="0" Grid.Column="5" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="5">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[5]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[5]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button06"  Grid.Row="0" Grid.Column="6" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="6">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[6]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[6]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button07"  Grid.Row="0" Grid.Column="7" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="7">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[7]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[7]}"/>
+                </Grid>
+            </Button>
+
+            <!--Row 1-->
+            <Button Name="Button10" Grid.Row="1" Grid.Column="0" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="8">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[8]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[8]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button11" Grid.Row="1" Grid.Column="1" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="9">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[9]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[9]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button12" Grid.Row="1" Grid.Column="2" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="10">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[10]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[10]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button13" Grid.Row="1" Grid.Column="3" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="11">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[11]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[11]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button14" Grid.Row="1" Grid.Column="4" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="12">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[12]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[12]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button15" Grid.Row="1" Grid.Column="5" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="13">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[13]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[13]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button16" Grid.Row="1" Grid.Column="6" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="14">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[14]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[14]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button17" Grid.Row="1" Grid.Column="7" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="15">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[15]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[15]}"/>
+                </Grid>
+            </Button>
+
+            <!--Row 2-->
+            <Button Name="Button20" Grid.Row="2" Grid.Column="0" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="16">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[16]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[16]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button21" Grid.Row="2" Grid.Column="1" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="17">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[17]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[17]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button22" Grid.Row="2" Grid.Column="2" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="18">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[18]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[18]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button23" Grid.Row="2" Grid.Column="3" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="19">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[19]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[19]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button24" Grid.Row="2" Grid.Column="4" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="20">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[20]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[20]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button25" Grid.Row="2" Grid.Column="5" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="21">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[21]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[21]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button26" Grid.Row="2" Grid.Column="6" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="22">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[22]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[22]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button27" Grid.Row="2" Grid.Column="7" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="23">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[23]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[23]}"/>
+                </Grid>
+            </Button>
+
+            <!--Row 3-->
+            <Button Name="Button30" Grid.Row="3" Grid.Column="0" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="24">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[24]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[24]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button31" Grid.Row="3" Grid.Column="1" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="25">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[25]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[25]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button32" Grid.Row="3" Grid.Column="2" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="26">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[26]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[26]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button33" Grid.Row="3" Grid.Column="3" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="27">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[27]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[27]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button34" Grid.Row="3" Grid.Column="4" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="28">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[28]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[28]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button35" Grid.Row="3" Grid.Column="5" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="29">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[29]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[29]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button36" Grid.Row="3" Grid.Column="6" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="30">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[30]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[30]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button37" Grid.Row="3" Grid.Column="7" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="31">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[31]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[31]}"/>
+                </Grid>
+            </Button>
+
+            <!--Row 4-->
+            <Button Name="Button40" Grid.Row="4" Grid.Column="0" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="32">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[32]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[32]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button41" Grid.Row="4" Grid.Column="1" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="33">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[33]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[33]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button42" Grid.Row="4" Grid.Column="2" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="34">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[34]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[34]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button43" Grid.Row="4" Grid.Column="3" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="35">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[35]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[35]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button44" Grid.Row="4" Grid.Column="4" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="36">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[36]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[36]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button45" Grid.Row="4" Grid.Column="5" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="37">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[37]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[37]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button46" Grid.Row="4" Grid.Column="6" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="38">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[38]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[38]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button47" Grid.Row="4" Grid.Column="7" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="39">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[39]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[39]}"/>
+                </Grid>
+            </Button>
+
+            <!--Row 5-->
+            <Button Name="Button50" Grid.Row="5" Grid.Column="0" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="40">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[40]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[40]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button51" Grid.Row="5" Grid.Column="1" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="41">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[41]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[41]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button52" Grid.Row="5" Grid.Column="2" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="42">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[42]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[42]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button53" Grid.Row="5" Grid.Column="3" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="43">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[43]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[43]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button54" Grid.Row="5" Grid.Column="4" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="44">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[44]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[44]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button55" Grid.Row="5" Grid.Column="5" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="45">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[45]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[45]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button56" Grid.Row="5" Grid.Column="6" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="46">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[46]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[46]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button57" Grid.Row="5" Grid.Column="7" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="47">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[47]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[47]}"/>
+                </Grid>
+            </Button>
+
+            <!--Row 6-->
+            <Button Name="Button60" Grid.Row="6" Grid.Column="0" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="48">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[48]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[48]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button61" Grid.Row="6" Grid.Column="1" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="49">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[49]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[49]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button62" Grid.Row="6" Grid.Column="2" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="50">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[50]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[50]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button63" Grid.Row="6" Grid.Column="3" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="51">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[51]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[51]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button64" Grid.Row="6" Grid.Column="4" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="52">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[52]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[52]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button65" Grid.Row="6" Grid.Column="5" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="53">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[53]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[53]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button66" Grid.Row="6" Grid.Column="6" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="54">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[54]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[54]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button67" Grid.Row="6" Grid.Column="7" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="55">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[55]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[55]}"/>
+                </Grid>
+            </Button>
+
+            <!--Row 7-->
+            <Button Name="Button70" Grid.Row="7" Grid.Column="0" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="56">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[56]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[56]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button71" Grid.Row="7" Grid.Column="1" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="57">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[57]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[57]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button72" Grid.Row="7" Grid.Column="2" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="58">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[58]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[58]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button73" Grid.Row="7" Grid.Column="3" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="59">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[59]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[59]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button74" Grid.Row="7" Grid.Column="4" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="60">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[60]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[60]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button75" Grid.Row="7" Grid.Column="5" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="61">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[61]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[61]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button76" Grid.Row="7" Grid.Column="6" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="62">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[62]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[62]}"/>
+                </Grid>
+            </Button>
+            <Button Name="Button77" Grid.Row="7" Grid.Column="7" Opacity="100" Command="{Binding Path=ChangeBoardCommand}" CommandParameter="63">
+                <Grid>
+                    <Image Source="{Binding ChessBoardBackgroundImageSources[63]}"/>
+                    <Image Source= "{Binding ChessBoardForegroundImageSources[63]}"/>
+                </Grid>
+            </Button>
+
+            <Grid x:Name="GameOverGrid" Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="4" Grid.RowSpan="2" Visibility="{Binding GameOverVisibility}">
+                <Rectangle Fill="MintCream" />
+                <TextBlock Text="{Binding GameOverText}" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            </Grid>
+
+
+        </Grid>
+
+
+
+    </Grid>
+</Page>
