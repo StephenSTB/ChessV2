@@ -213,8 +213,9 @@ namespace ChessV2
         {
             ChessBoard = new ChessBoardModel();
 
-            FlipBoard("");
-            FlipBoard("");
+            GameOverVisibility = Visibility.Collapsed;
+
+            ResetChessBoardImages();
         }
 
         private void UpdateBoard()
@@ -363,6 +364,12 @@ namespace ChessV2
         public void FlipBoard(object obj)
         {
             BoardFliped = !BoardFliped;
+            ChessBoard.PieceSelected = false;
+            ResetChessBoardImages();
+        }
+
+        private void ResetChessBoardImages()
+        {
             for (int i = 0; i < 64; i++)
             {
                 int s = BoardFliped ? 63 - i : i;
@@ -414,6 +421,8 @@ namespace ChessV2
                         break;
 
                 }
+
+                ChessBoardForegroundImageSources[s] = blnk;
             }
         }
     }

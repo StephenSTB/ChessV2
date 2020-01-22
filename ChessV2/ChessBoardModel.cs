@@ -650,10 +650,11 @@ namespace ChessV2
                 moves.Remove(s4);
             }
 
+            // Condition to see if king is in Check.
             chessBoardState.WhitesMove = !chessBoardState.WhitesMove;
             if(Check(ref chessBoardState))
             {
-                if (moves.Contains(s2))
+                if (moves.Contains(s2)) // Remove castling moves if in Check.
                 {
                     moves.Remove(s2);
                 }
