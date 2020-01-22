@@ -535,7 +535,6 @@ namespace ChessV2
                 bool[] RooksMoved = chessBoardState.WhitesMove ? chessBoardState.WhiteRooksMoved : chessBoardState.BlackRooksMoved;
                 Pieces rook = chessBoardState.WhitesMove ? Pieces.wr : Pieces.br;
 
-
                 if (!KingMoved)
                 {
                     //King Side Castle
@@ -651,11 +650,25 @@ namespace ChessV2
                 moves.Remove(s4);
             }
 
+            chessBoardState.WhitesMove = !chessBoardState.WhitesMove;
+            if(Check(ref chessBoardState))
+            {
+                if (moves.Contains(s2))
+                {
+                    moves.Remove(s2);
+                }
+                if (moves.Contains(s4))
+                {
+                    moves.Remove(s4);
+                }
+            }
+            chessBoardState.WhitesMove = !chessBoardState.WhitesMove;
+
         }
 
 
         //Method to test if the current player is in check.
-        private bool Check(ref ChessBoardState chessBoardState)
+        public bool Check(ref ChessBoardState chessBoardState)
         {
             List<ChessPiece> playersPieces = chessBoardState.WhitesMove ? chessBoardState.WhitePieces : chessBoardState.BlackPieces;
 

@@ -95,6 +95,7 @@ namespace ChessV2
                 RooksMoved[0] = chessBoardState.WhitesMove ? chessBoardState.WhiteRooksMoved[0] : chessBoardState.BlackRooksMoved[0];
                 RooksMoved[1] = chessBoardState.WhitesMove ? chessBoardState.WhiteRooksMoved[1] : chessBoardState.BlackRooksMoved[1];
 
+
                 // King Side Castle
                 if (!RooksMoved[0])
                 {
@@ -118,7 +119,6 @@ namespace ChessV2
 
                 }
             }
-
 
             return potentialMoves;
         } 
