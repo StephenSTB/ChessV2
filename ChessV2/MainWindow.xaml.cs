@@ -33,13 +33,15 @@ namespace ChessV2
         {
             InitializeComponent();
 
-            ChessBoardModel = new ChessBoardModel();            // Initialize ChessBoardModel.
+            ChessBoardModel = new ChessBoardModel();                // Initialize ChessBoardModel.
 
-            ViewModel =  new ChessViewModel(ChessBoardModel);   // Initialize ViewModel.
+            ViewModel =  new ChessViewModel(ref ChessBoardModel);   // Initialize ViewModel.
 
-            ChessBoard = new ChessBoard(ViewModel);             // Initialize ChessBoard.
+            ChessBoard = new ChessBoard(ref ViewModel);             // Initialize ChessBoard.
 
-            ChessBoardFrame.Content = ChessBoard;               // Set ChessBoardFrame content to the ChessBoard.
+            ChessBoardFrame.Content = ChessBoard;                   // Set ChessBoardFrame content to the ChessBoard.
+
+            DataContext = ViewModel;                                // Set the DataContext to the ViewModel.
         }
     }
 

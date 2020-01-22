@@ -63,13 +63,22 @@ namespace ChessV2
         #endregion
 
 
-        // Command executed when a square on the chess board is pressed.
+        // Command executed to test if the Board can be changed.
         private readonly DelegateCommand _changeBoardCommand;
         public ICommand ChangeBoardCommand => _changeBoardCommand;
 
         // Command executed when a square in pawn promotion window is pressed
         private readonly DelegateCommand _promoteCommand;
         public ICommand PromoteCommand => _promoteCommand;
+
+
+        // Command executed when Reset button is pressed.
+        private readonly DelegateCommand _resetBoardCommand;
+        public ICommand ResetBoardCommand => _resetBoardCommand;
+
+        // Command executed when Flip Board a button is pressed.
+        private readonly DelegateCommand _flipBoardCommand;
+        public ICommand FlipBoardCommand => _flipBoardCommand;
 
 
         public ImageSource _BoardImage;
@@ -100,10 +109,14 @@ namespace ChessV2
         // Window to promote pawns.
         PawnPromotionWindow ppw;
 
-        public ChessViewModel(ChessBoardModel chessBoard)
+        public ChessViewModel(ref ChessBoardModel chessBoard)
         {
             _changeBoardCommand = new DelegateCommand(ChangeBoard, CanChangeBoard);
             _promoteCommand = new DelegateCommand(PromotePawn, CanChangeBoard);
+            
+            // Initialize _resetBoard and _flipBoard Commands. 
+            _resetBoardCommand = new DelegateCommand(ResetBoard, CanChangeBoard);
+            _flipBoardCommand = new DelegateCommand(FlipBoard, CanChangeBoard);
 
             BoardImage = new BitmapImage(new Uri("../../Images/board/board.jpg", UriKind.Relative));
 
@@ -194,6 +207,14 @@ namespace ChessV2
             ppw = new PawnPromotionWindow(this);
             ppw.Show();
 
+        }
+
+        private void ResetBoard(object obj)
+        {
+            ChessBoard = new ChessBoardModel();
+
+            FlipBoard("");
+            FlipBoard("");
         }
 
         private void UpdateBoard()
@@ -339,7 +360,7 @@ namespace ChessV2
             }
         }
 
-        public void FlipBoard()
+        public void FlipBoard(object obj)
         {
             BoardFliped = !BoardFliped;
             for (int i = 0; i < 64; i++)

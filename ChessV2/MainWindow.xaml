@@ -7,6 +7,7 @@
         mc:Ignorable="d"
         Title="Chess" Height="750" Width="800">
     <Grid>
+
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="20"/>
             <ColumnDefinition Width="*"/>
@@ -26,6 +27,13 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="20"/>
         </Grid.RowDefinitions>
+
+        <Menu Grid.Column="1">
+            <MenuItem Header="Settings">
+                <MenuItem Header="Reset" Command="{Binding Path=ResetBoardCommand}"/>
+                <MenuItem Header="Flip Board" Command="{Binding Path=FlipBoardCommand}"/>
+            </MenuItem>
+        </Menu>
 
         <Frame x:Name="ChessBoardFrame" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="2" Grid.RowSpan="4"  NavigationUIVisibility="Hidden"/>
 

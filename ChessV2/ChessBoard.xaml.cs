@@ -21,7 +21,7 @@ namespace ChessV2
     public partial class ChessBoard : Page
     {
        
-        public ChessBoard(ChessViewModel ViewModel)
+        public ChessBoard(ref ChessViewModel ViewModel)
         {
             InitializeComponent();
 
