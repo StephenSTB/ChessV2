@@ -20,14 +20,26 @@ namespace ChessV2
     /// </summary>
     public partial class MainWindow : Window
     {
-
+        // Declare ChessBoard page.
         ChessBoard ChessBoard;
+
+        // Declare ChessViewModel.
+        ChessViewModel ViewModel;
+
+        // Declare ChessBoardModel.
+        ChessBoardModel ChessBoardModel;
 
         public MainWindow()
         {
             InitializeComponent();
-            ChessBoard = new ChessBoard();
-            ChessBoardFrame.Content = ChessBoard;
+
+            ChessBoardModel = new ChessBoardModel();            // Initialize ChessBoardModel.
+
+            ViewModel =  new ChessViewModel(ChessBoardModel);   // Initialize ViewModel.
+
+            ChessBoard = new ChessBoard(ViewModel);             // Initialize ChessBoard.
+
+            ChessBoardFrame.Content = ChessBoard;               // Set ChessBoardFrame content to the ChessBoard.
         }
     }
 

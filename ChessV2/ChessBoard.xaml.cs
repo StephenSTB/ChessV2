@@ -20,26 +20,16 @@ namespace ChessV2
     /// </summary>
     public partial class ChessBoard : Page
     {
-        ChessBoardModel ChessBoardModel;
-
-        ChessViewModel ViewModel;
-        public ChessBoard()
+       
+        public ChessBoard(ChessViewModel ViewModel)
         {
             InitializeComponent();
 
-            // Initialize the ChessBoard
-            Initialize();
-        }
-
-        public void Initialize()
-        {
-            ChessBoardModel = new ChessBoardModel();
-
-            ViewModel = new ChessViewModel(ChessBoardModel);
             // Set the data context
             DataContext = ViewModel;
-
         }
+        
+        /*
         public void Reset()
         {
             ChessBoardModel = new ChessBoardModel();
@@ -50,6 +40,6 @@ namespace ChessV2
         public void Flip()
         {
             ViewModel.FlipBoard();
-        }
+        }*/
     }
 }
