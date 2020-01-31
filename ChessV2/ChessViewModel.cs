@@ -4,10 +4,12 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 
 namespace ChessV2
 {
@@ -106,6 +108,29 @@ namespace ChessV2
 
         bool BoardFliped;
 
+        // Variables for Timers.
+        private Timer BlackTimer;
+
+        private Timer WhiteTimer;
+
+        public int BlackTime;
+
+        public int WhiteTime;
+
+        public string _TopTime;
+        public string TopTime
+        {
+            get => _TopTime;
+            set => SetProperty(ref _TopTime, value);
+        }
+
+        public string _BottomTime;
+        public string BottomTime
+        {
+            get => _BottomTime;
+            set => SetProperty(ref _BottomTime, value);
+        }
+
         // Window to promote pawns.
         PawnPromotionWindow ppw;
 
@@ -132,7 +157,73 @@ namespace ChessV2
             BoardFliped = false;
 
             InitializeBoardImages();
+
+            InitializeTimers();
         }
+
+        private void InitializeTimers()
+        {
+
+            BlackTime = 1800;
+            BlackTimer = new Timer(1000);
+            BlackTimer.Elapsed += BlackTimedEvent;
+            BlackTimer.AutoReset = true;
+            BlackTimer.Start();
+
+            WhiteTime = 1800;
+            WhiteTimer = new Timer(1000);
+            WhiteTimer.Elapsed += WhiteTimedEvent;
+            WhiteTimer.AutoReset = true;
+            WhiteTimer.Start();
+
+        }
+
+        private void WhiteTimedEvent(Object source, ElapsedEventArgs e)
+        {
+            if (ChessBoard.BoardState.WhitesMove)
+            {
+                WhiteTime--;
+                if (WhiteTime == 0)
+                {
+                    ChessBoard.GAMEOVER = true;
+                    UpdateBoard();
+                    WhiteTimer.Stop();
+                }
+            }
+            TimeSpan r = TimeSpan.FromSeconds(WhiteTime);
+            if (!BoardFliped)
+            {
+                BottomTime = r.ToString("m':'ss");
+            }
+            else
+            {
+                TopTime = r.ToString("m':'ss");
+            }
+        }
+
+        private void BlackTimedEvent(Object source, ElapsedEventArgs e)
+        {
+            if (!ChessBoard.BoardState.WhitesMove)
+            {
+                BlackTime--;
+                if (BlackTime == 0)
+                {
+                    ChessBoard.GAMEOVER = true;
+                    UpdateBoard();
+                    BlackTimer.Stop();
+                }
+            }
+            TimeSpan r = TimeSpan.FromSeconds(BlackTime);
+            if (!BoardFliped)
+            {
+                TopTime = r.ToString("m':'ss");
+            }
+            else
+            {
+                BottomTime = r.ToString("m':'ss");
+            }
+        }
+
 
         private void PromotePawn(object commandParameter)
         {
@@ -177,6 +268,7 @@ namespace ChessV2
                     return;
                 }
                 GameOverVisibility = Visibility.Visible;
+                GameOverText = "Game Over \n Draw";
                 return;
             }
 

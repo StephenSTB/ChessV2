@@ -35,7 +35,11 @@
             </MenuItem>
         </Menu>
 
+        <Label Content="{Binding TopTime}" FontSize="25" Grid.Column="4" Grid.Row="1"/>
+            
         <Frame x:Name="ChessBoardFrame" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="2" Grid.RowSpan="4"  NavigationUIVisibility="Hidden"/>
+
+        <Label Content="{Binding BottomTime}" FontSize="25" Grid.Column="4" Grid.Row="6"/>
 
     </Grid>
 </Window>
