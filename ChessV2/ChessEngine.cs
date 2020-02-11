@@ -94,17 +94,18 @@ namespace ChessV2
                         bestMove = getBestMove(ref currentBoard); // Set best move the best move that can be found in one iteration.
                     }
 
-                    //Console.WriteLine("Start Move " + " " + bestMove[0].row + " " + bestMove[0].column + " " + bestMove[1].row + " " + bestMove[1].column + " square 1 " +  (bestMove[0].row * 8 + bestMove[0].column) + " square 2 " + (bestMove[1].row * 8 + bestMove[1].column));
 
-                    ViewModel.ChangeBoard((bestMove[0].row * 8 + bestMove[0].column));
+                    // Change the BoardState base on the bestMove
+                    ChessBoard.ChangeBoardState((bestMove[0].row * 8 + bestMove[0].column));
+
+                    ViewModel.UpdateBoard();
 
                     //Thread.Sleep(5000);
 
-                    ViewModel.ChangeBoard((bestMove[1].row * 8 + bestMove[1].column));
+                    ChessBoard.ChangeBoardState((bestMove[1].row * 8 + bestMove[1].column));
 
-                    //Console.WriteLine("Whos Move? " + ChessBoard.BoardState.WhitesMove);
+                    ViewModel.UpdateBoard();
 
-                    
                 }
 
                 Thread.Sleep(1000);

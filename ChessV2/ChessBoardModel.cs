@@ -81,6 +81,9 @@ namespace ChessV2
 
             public bool promotePawn;
 
+            public bool WhiteAlwaysQueen;
+            public bool BlackAlwaysQueen;
+
         }
         // The Chess board state representing this ChessBoardModel
         public ChessBoardState BoardState;
@@ -384,6 +387,16 @@ namespace ChessV2
                 int backRank = chessBoardState.WhitesMove ? 0 : 7;
                 if (square.row == backRank)
                 {
+                    if (chessBoardState.WhitesMove && chessBoardState.WhiteAlwaysQueen)
+                    {
+                        chessBoardState.SelectedPiece.piece = Pieces.wq;
+                        return;
+                    }
+                    if (!chessBoardState.WhitesMove && chessBoardState.BlackAlwaysQueen)
+                    {
+                        chessBoardState.SelectedPiece.piece = Pieces.bq;
+                        return;
+                    }
                     chessBoardState.promotePawn = true;
                     //Console.WriteLine("promote!");
                 }
@@ -780,6 +793,10 @@ namespace ChessV2
             cBoard.enPassantMove = new Square(chessBoardState.enPassantMove.row, chessBoardState.enPassantMove.column);
 
             cBoard.promotePawn = chessBoardState.promotePawn;
+
+            cBoard.WhiteAlwaysQueen = chessBoardState.WhiteAlwaysQueen;
+
+            cBoard.BlackAlwaysQueen = chessBoardState.BlackAlwaysQueen;
 
             return cBoard;
         }

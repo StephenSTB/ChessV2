@@ -221,13 +221,16 @@ namespace ChessV2
                     ChessEnginePlayer[0] = false;
                     // Close the Chess Engine.
                     ChessEngines[0].stop();
+                    // Set WhiteAlwaysQueen to false.
+                    ChessBoard.BoardState.WhiteAlwaysQueen = false;
                     return;
                 }
                 // Change the WhiteEngineImage to the chip image indicating the engine is running.
                 WhiteEngineImage = WEImage;
                 // Set the White Chess engine conditional to true.
                 ChessEnginePlayer[0] = true;
-
+                // Set WhiteAlwaysQueen to true to allow pawn promotion.
+                ChessBoard.BoardState.WhiteAlwaysQueen = true;
                 // Initialize ChessViewModel to this.
                 ChessViewModel a = this;
                 // Start White Chess Engine.
@@ -243,12 +246,16 @@ namespace ChessV2
                 ChessEnginePlayer[1] = false;
                 // Close the Chess Engine.
                 ChessEngines[1].stop();
+                // Set BlackAlwaysQueen to false.
+                ChessBoard.BoardState.BlackAlwaysQueen = false;
                 return;
             }
             // Change the BlackEngineImage to the chip image indicating the engine is running.
             BlackEngineImage = BEImage;
             // Set the Black Chess engine conditional to true.
             ChessEnginePlayer[1] = true;
+            // Set BlackAlwaysQueen to true to allow pawn promotion.
+            ChessBoard.BoardState.BlackAlwaysQueen = true;
             // Initialize ChessViewModel to this.
             ChessViewModel b = this;
             // Start Black Chess Engine.
@@ -260,10 +267,12 @@ namespace ChessV2
             ChessViewModel b = this;
             if (ChessEnginePlayer[0])
             {
+                ChessBoard.BoardState.WhiteAlwaysQueen = true;
                 ChessEngines[0] = new ChessEngine(ref ChessBoard, ref b, true);
             }
             if (ChessEnginePlayer[1])
             {
+                ChessBoard.BoardState.BlackAlwaysQueen = true;
                 ChessEngines[1] = new ChessEngine(ref ChessBoard, ref b, false);
             }
         }
@@ -358,9 +367,8 @@ namespace ChessV2
             return true;
         }
 
-        public void ChangeBoard(object commandParameter)
+        private void ChangeBoard(object commandParameter)
         {
-
             if (ChessBoard.BoardState.promotePawn)
             {
                 return;
@@ -369,6 +377,12 @@ namespace ChessV2
             int.TryParse(commandParameter.ToString(), out square);
 
             square = BoardFliped ? 63 - square : square;
+
+            if(ChessBoard.BoardState.WhitesMove && ChessEnginePlayer[0] || !ChessBoard.BoardState.WhitesMove && ChessEnginePlayer[1])
+            {
+                Console.WriteLine("Can't Select Pieces when engine is running.");
+                return;
+            }
 
             ChessBoard.ChangeBoardState(square);
 
