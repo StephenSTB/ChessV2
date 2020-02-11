@@ -62,6 +62,14 @@ namespace ChessV2
 
         BitmapImage slct = new BitmapImage(new Uri("../../Images/select/slct.png", UriKind.Relative));
 
+        // Engine Images
+
+        BitmapImage WEImage = new BitmapImage(new Uri("../../Images/engine/whitechip.png", UriKind.Relative));
+
+        BitmapImage BEImage = new BitmapImage(new Uri("../../Images/engine/blackchip.png", UriKind.Relative));
+
+
+
         #endregion
 
 
@@ -82,7 +90,26 @@ namespace ChessV2
         private readonly DelegateCommand _flipBoardCommand;
         public ICommand FlipBoardCommand => _flipBoardCommand;
 
+        // Command executed to test if the Engine can be changed.
+        private readonly DelegateCommand _changeEngineCommand;
+        public ICommand ChangeEngineCommand => _changeEngineCommand;
 
+        // Images for the Chess Engine settings.
+        public ImageSource _WhiteEngineImage;
+        public ImageSource WhiteEngineImage
+        {
+            get => _WhiteEngineImage;
+            set => SetProperty(ref _WhiteEngineImage, value);
+        }
+
+        public ImageSource _BlackEngineImage;
+        public ImageSource BlackEngineImage
+        {
+            get => _BlackEngineImage;
+            set => SetProperty(ref _BlackEngineImage, value);
+        }
+
+        // Chess Board image.
         public ImageSource _BoardImage;
         public ImageSource BoardImage
         {
@@ -134,6 +161,11 @@ namespace ChessV2
         // Window to promote pawns.
         PawnPromotionWindow ppw;
 
+        // Variables to handle which player/s the ChessEngine will control.
+        public bool[] ChessEnginePlayer = new bool[2];
+
+        private ChessEngine[] ChessEngines = new ChessEngine[2];
+
         public ChessViewModel(ref ChessBoardModel chessBoard)
         {
             _changeBoardCommand = new DelegateCommand(ChangeBoard, CanChangeBoard);
@@ -143,12 +175,21 @@ namespace ChessV2
             _resetBoardCommand = new DelegateCommand(ResetBoard, CanChangeBoard);
             _flipBoardCommand = new DelegateCommand(FlipBoard, CanChangeBoard);
 
+            _changeEngineCommand = new DelegateCommand(ChangeEngine, CanChangeBoard);
+
             BoardImage = new BitmapImage(new Uri("../../Images/board/board.jpg", UriKind.Relative));
 
             ChessBoardBackgroundImageSources = new ObservableCollection<ImageSource>();
             ChessBoardForegroundImageSources = new ObservableCollection<ImageSource>();
 
             ChessBoard = chessBoard;
+
+            ChessEnginePlayer[0] = false;
+            ChessEnginePlayer[1] = false;
+
+            // Initialize Engine images.
+            WhiteEngineImage = wk;
+            BlackEngineImage = bk;
 
             GameOverVisibility = Visibility.Collapsed;
 
@@ -159,6 +200,84 @@ namespace ChessV2
             InitializeBoardImages();
 
             InitializeTimers();
+
+            InitializeEngines();
+        }
+
+        private void ChangeEngine(object obj)
+        {
+            int player;
+            int.TryParse(obj.ToString(), out player);
+
+            // Condition to test if the Engine to change was White's
+            if(player == 0)
+            {
+                // Condition to test if a White Engine is running.
+                if (ChessEnginePlayer[0])
+                {
+                    // Change the WhiteEngineImage to a WhiteKing to indicate no engine running.
+                    WhiteEngineImage = wk;
+                    // Set the White Chess engine conditional to false.
+                    ChessEnginePlayer[0] = false;
+                    // Close the Chess Engine.
+                    ChessEngines[0].stop();
+                    return;
+                }
+                // Change the WhiteEngineImage to the chip image indicating the engine is running.
+                WhiteEngineImage = WEImage;
+                // Set the White Chess engine conditional to true.
+                ChessEnginePlayer[0] = true;
+
+                // Initialize ChessViewModel to this.
+                ChessViewModel a = this;
+                // Start White Chess Engine.
+                ChessEngines[0] = new ChessEngine(ref ChessBoard, ref a, true);
+                return;
+            }
+            // Must be black.
+            if (ChessEnginePlayer[1])
+            {
+                // Change the BlackEngineImage to a BlackKing to indicate no engine running.
+                BlackEngineImage = bk;
+                // Set the Black Chess engine conditional to false.
+                ChessEnginePlayer[1] = false;
+                // Close the Chess Engine.
+                ChessEngines[1].stop();
+                return;
+            }
+            // Change the BlackEngineImage to the chip image indicating the engine is running.
+            BlackEngineImage = BEImage;
+            // Set the Black Chess engine conditional to true.
+            ChessEnginePlayer[1] = true;
+            // Initialize ChessViewModel to this.
+            ChessViewModel b = this;
+            // Start Black Chess Engine.
+            ChessEngines[1] = new ChessEngine(ref ChessBoard, ref b, false);
+        }
+
+        private void InitializeEngines()
+        {
+            ChessViewModel b = this;
+            if (ChessEnginePlayer[0])
+            {
+                ChessEngines[0] = new ChessEngine(ref ChessBoard, ref b, true);
+            }
+            if (ChessEnginePlayer[1])
+            {
+                ChessEngines[1] = new ChessEngine(ref ChessBoard, ref b, false);
+            }
+        }
+
+        public void CloseEngines()
+        {
+            if (ChessEnginePlayer[0])
+            {
+                ChessEngines[0].stop();
+            }
+            if (ChessEnginePlayer[1])
+            {
+                ChessEngines[1].stop();
+            }
         }
 
         private void InitializeTimers()
@@ -239,8 +358,9 @@ namespace ChessV2
             return true;
         }
 
-        private void ChangeBoard(object commandParameter)
+        public void ChangeBoard(object commandParameter)
         {
+
             if (ChessBoard.BoardState.promotePawn)
             {
                 return;
@@ -275,6 +395,11 @@ namespace ChessV2
             if (ChessBoard.BoardState.promotePawn)
             {
                 PawnPromotion();
+                // Condition to test if the Chess Engine has a pawn promotion.
+                if ((ChessBoard.BoardState.WhitesMove && ChessEnginePlayer[0] == true) || (!ChessBoard.BoardState.WhitesMove && ChessEnginePlayer[1] == true))
+                {
+                    PromotePawn(3); // promote to a queen. 
+                }
             }
             //Console.WriteLine(square);
 
@@ -303,14 +428,24 @@ namespace ChessV2
 
         private void ResetBoard(object obj)
         {
-            ChessBoard = new ChessBoardModel();
+            CloseEngines(); // Close Chess Engines.
 
-            GameOverVisibility = Visibility.Collapsed;
+            ChessBoard = new ChessBoardModel(); // Create new ChessBoardModel.
 
-            ResetChessBoardImages();
+            GameOverVisibility = Visibility.Collapsed; // Collapes game over message
+
+            WhiteTimer.Stop(); // stop timer.
+
+            BlackTimer.Stop(); // stop timer.
+
+            InitializeTimers(); // Reinitialize timers
+
+            InitializeEngines(); // Reinitialize Engines.
+
+            ResetChessBoardImages(); // Reset Board Images
         }
 
-        private void UpdateBoard()
+        public void UpdateBoard()
         {
 
             for (int i = 0; i < ChessBoard.backGroundChanges.Count; i++)

@@ -6,6 +6,21 @@
         xmlns:local="clr-namespace:ChessV2"
         mc:Ignorable="d"
         Title="Chess" Height="750" Width="800">
+
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid Background="{TemplateBinding Background}">
+                            <ContentPresenter />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
     <Grid>
 
         <Grid.ColumnDefinitions>
@@ -28,12 +43,40 @@
             <RowDefinition Height="20"/>
         </Grid.RowDefinitions>
 
-        <Menu Grid.Column="1">
+        <Menu Grid.Column ="1" Grid.ColumnSpan="6">
             <MenuItem Header="Settings">
                 <MenuItem Header="Reset" Command="{Binding Path=ResetBoardCommand}"/>
                 <MenuItem Header="Flip Board" Command="{Binding Path=FlipBoardCommand}"/>
             </MenuItem>
         </Menu>
+
+        <Grid Grid.Row="2" Grid.Column="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="10"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="20"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="20"/>
+            </Grid.RowDefinitions>
+            <Button Name="WhiteEngineButton"  Grid.Column="1" Grid.Row ="1" Grid.RowSpan="2" Opacity="100" Command="{Binding Path=ChangeEngineCommand}" CommandParameter="0">
+                <Grid>
+                    <Image Source="{Binding WhiteEngineImage}"/>
+                </Grid>
+            </Button>
+            <Button Name="BlackEngineButton"  Grid.Column="3" Grid.Row ="1" Grid.RowSpan="2" Opacity="100" Command="{Binding Path=ChangeEngineCommand}" CommandParameter="1">
+                <Grid>
+                    <Image Source="{Binding BlackEngineImage}"/>
+                </Grid>
+            </Button>
+        </Grid>
+
+        <Label Content="Engines" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" FontWeight="Bold" Grid.Column="5" Grid.Row="1"/>
 
         <Label Content="{Binding TopTime}" FontSize="25" Grid.Column="4" Grid.Row="1"/>
             

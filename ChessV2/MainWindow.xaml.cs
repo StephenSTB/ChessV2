@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -42,6 +43,16 @@ namespace ChessV2
             ChessBoardFrame.Content = ChessBoard;                   // Set ChessBoardFrame content to the ChessBoard.
 
             DataContext = ViewModel;                                // Set the DataContext to the ViewModel.
+
+            
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            //e.Cancel = true;
+            //Do whatever you want here..
+            Console.WriteLine("Close");
+            ViewModel.CloseEngines();
         }
     }
 

@@ -253,6 +253,7 @@ namespace ChessV2
             {
                 //Console.WriteLine("Found Valid Square");
                 movePiece(ref BoardState, square);
+
                 BoardState.WhitesMove = !BoardState.WhitesMove;
 
                 if (gameOver(ref BoardState))
@@ -266,7 +267,7 @@ namespace ChessV2
 
         }
 
-        private bool gameOver(ref ChessBoardState chessBoardState)
+        public bool gameOver(ref ChessBoardState chessBoardState)
         {
             ChessBoardState cBoard = cloneChessBoardState(ref chessBoardState);
 
@@ -313,7 +314,7 @@ namespace ChessV2
 
         }
 
-        private void movePiece(ref ChessBoardState chessBoardState, Square square)
+        public void movePiece(ref ChessBoardState chessBoardState, Square square)
         {
             backGroundChanges = new List<ChessPiece>();
 
@@ -595,7 +596,7 @@ namespace ChessV2
 
 
         // Method to return the valid moves of the selected piece.
-        private List<Square> getValidMoves(ref ChessBoardState chessBoardState)
+        public List<Square> getValidMoves(ref ChessBoardState chessBoardState)
         {
 
             List<Square> validMoves = new List<Square>();
@@ -651,9 +652,11 @@ namespace ChessV2
             }
 
             // Condition to see if king is in Check.
+            
             chessBoardState.WhitesMove = !chessBoardState.WhitesMove;
             if(Check(ref chessBoardState))
             {
+                //Console.WriteLine($"King in check can't castle");
                 if (moves.Contains(s2)) // Remove castling moves if in Check.
                 {
                     moves.Remove(s2);
@@ -664,16 +667,17 @@ namespace ChessV2
                 }
             }
             chessBoardState.WhitesMove = !chessBoardState.WhitesMove;
-
         }
 
 
-        //Method to test if the current player is in check.
+        //Method to test if the other player is in check.
         public bool Check(ref ChessBoardState chessBoardState)
         {
             List<ChessPiece> playersPieces = chessBoardState.WhitesMove ? chessBoardState.WhitePieces : chessBoardState.BlackPieces;
 
             Square otherKingSquare = chessBoardState.WhitesMove ? chessBoardState.BlackKingSquare : chessBoardState.WhiteKingSquare;
+
+            ChessPiece selectedPiece = chessBoardState.SelectedPiece;
 
             for (int i = 0; i < playersPieces.Count; i++)
             {
@@ -684,10 +688,12 @@ namespace ChessV2
                 {
                     if (playerPotentialMoves[j].Equals(otherKingSquare))
                     {
+                        chessBoardState.SelectedPiece = selectedPiece;
                         return true;
                     }
                 }
             }
+            chessBoardState.SelectedPiece = selectedPiece;
             return false;
         }
 
@@ -718,13 +724,13 @@ namespace ChessV2
         }
 
         // Method to clone a ChessBoardState
-        private ChessBoardState cloneChessBoardState(ref ChessBoardState chessBoardState)
+        public ChessBoardState cloneChessBoardState(ref ChessBoardState chessBoardState)
         {
             ChessBoardState cBoard = new ChessBoardState();
 
             cBoard.WhitesMove = chessBoardState.WhitesMove;
 
-            cBoard.SelectedPiece = new ChessPiece(chessBoardState.SelectedPiece.piece, chessBoardState.SelectedPiece.square);
+            cBoard.SelectedPiece = new ChessPiece(chessBoardState.SelectedPiece.piece, chessBoardState.SelectedPiece.square.row, chessBoardState.SelectedPiece.square.column);
 
             cBoard.WhitePieces = new List<ChessPiece>();
 
@@ -732,12 +738,12 @@ namespace ChessV2
 
             for (int i = 0; i < chessBoardState.WhitePieces.Count; i++)
             {
-                cBoard.WhitePieces.Add(chessBoardState.WhitePieces[i]);
+                cBoard.WhitePieces.Add(new ChessPiece(chessBoardState.WhitePieces[i].piece, chessBoardState.WhitePieces[i].square.row, chessBoardState.WhitePieces[i].square.column));
             }
 
             for (int i = 0; i < chessBoardState.BlackPieces.Count; i++)
             {
-                cBoard.BlackPieces.Add(chessBoardState.BlackPieces[i]);
+                cBoard.BlackPieces.Add(new ChessPiece(chessBoardState.BlackPieces[i].piece, chessBoardState.BlackPieces[i].square.row, chessBoardState.BlackPieces[i].square.column));
             }
 
             cBoard.Board = new Pieces[8, 8];
