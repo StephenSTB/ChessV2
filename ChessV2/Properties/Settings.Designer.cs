@@ -23,14 +23,16 @@ namespace ChessV2.Properties {
             }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\\ChessDataBase" +
-            ".mdf;Integrated Security=True")]
-        public string ChessDataBaseConnectionString {
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\PC\\Documents\\ChessV2" +
+            "\\ChessV2\\DataBase\\ChessDataBase.mdf;Integrated Security=True")]
+        public string ChessDatabase {
             get {
-                return ((string)(this["ChessDataBaseConnectionString"]));
+                return ((string)(this["ChessDatabase"]));
+            }
+            set {
+                this["ChessDatabase"] = value;
             }
         }
     }

@@ -84,6 +84,7 @@ namespace ChessV2
             public bool WhiteAlwaysQueen;
             public bool BlackAlwaysQueen;
 
+            public List<string> BoardPositions;
         }
         // The Chess board state representing this ChessBoardModel
         public ChessBoardState BoardState;
@@ -230,6 +231,8 @@ namespace ChessV2
             BoardState.enPassantPieces = new List<ChessPiece>();
 
             BoardState.promotePawn = false;
+
+            BoardState.BoardPositions = new List<string>();
         }
 
         // Changes the state of the chessboard (players moves).
@@ -257,6 +260,9 @@ namespace ChessV2
                 //Console.WriteLine("Found Valid Square");
                 movePiece(ref BoardState, square);
 
+                // Add the current board position to the list of previous board positions. (help detect stalemate)
+                addBoardPosition(ref BoardState);
+
                 BoardState.WhitesMove = !BoardState.WhitesMove;
 
                 if (gameOver(ref BoardState))
@@ -268,6 +274,26 @@ namespace ChessV2
             BoardState.ValidMoves = new List<Square>();
             updateForeground();
 
+        }
+
+        // Adds the current board position to the list of board positions
+        private void addBoardPosition(ref ChessBoardState currentBoard)
+        {
+            // Declare boarePosition string to hold the string represtation of the current Board.
+            string boardPosition = "";
+
+            // Loops to add each squares piece to the list.
+            for(int i = 0; i < 8; i++)
+            {
+                for(int j = 0; j < 8; j++)
+                {
+                    // Add square's piece to the boardPostition string.
+                    boardPosition += BoardState.Board[i, j].ToString();
+                }
+            }
+
+            // Add boardPosition to the list of boardPositions;
+            currentBoard.BoardPositions.Add(boardPosition);
         }
 
         public bool gameOver(ref ChessBoardState chessBoardState)
@@ -797,6 +823,11 @@ namespace ChessV2
             cBoard.WhiteAlwaysQueen = chessBoardState.WhiteAlwaysQueen;
 
             cBoard.BlackAlwaysQueen = chessBoardState.BlackAlwaysQueen;
+
+            foreach(string s in chessBoardState.BoardPositions)
+            {
+                cBoard.BoardPositions.Add(s);
+            }
 
             return cBoard;
         }

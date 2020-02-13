@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -40,7 +41,7 @@ namespace ChessV2
             Player = player;
 
             // Initialize BoardDepth to 4.
-            BoardDepth = 4;
+            BoardDepth = 5;
 
             // ThreadStart variable initializes with the start method which the Thread will run.
             ThreadStart engineStart = new ThreadStart(start); 
@@ -64,43 +65,60 @@ namespace ChessV2
                 // Condtion to test if it is the Engines move or if GAMEOVER.
                 if (Player == ChessBoard.BoardState.WhitesMove && !ChessBoard.GAMEOVER)
                 {
-                    
-                    Square[] bestMove = new Square[2]; bestMove[0] = new Square(0, 0); bestMove[1] = new Square(0, 0); // Initialize bestMove to hold the best move the Engine can find.
+                    // Declare and initialize boardState string to be the string represnting the current BoardState.
+                    string boardState = getBoardString(ref ChessBoard.BoardState);
+
+                    // Declare and initialize dbMove to get a possible best move found by the ChessDatabase.
+                    int[] dbBestMove = dbRetrieveMove(boardState);
+
+                    // Condition to test if a best move was found.
+                    if(!(dbBestMove[0] == 0 && dbBestMove[1] == 0))
+                    {
+
+                        // Change the BoardState based on the dbBestMove
+                        ChessBoard.ChangeBoardState(dbBestMove[0]);
+
+                        ViewModel.UpdateBoard();
+
+                        ChessBoard.ChangeBoardState(dbBestMove[1]);
+
+                        ViewModel.UpdateBoard();
+                        continue;
+                    }
+
+                    // Initialize bestMove to hold the best move the Engine can find.
+                    Square[] bestMove = new Square[2]; bestMove[0] = new Square(0, 0); bestMove[1] = new Square(0, 0); 
 
                     // Declare and initialize currentBoard to be a clone of the current BoardState.
                     ChessBoardState currentBoard = ChessBoard.cloneChessBoardState(ref ChessBoard.BoardState);
 
-                    // Declare BestMoveValue to hold the best move and min/max double value for minimax algorithm.
-                    //double[] BestMoveValue;
+                    // Variable to hold the best board value and the best move.
+                    double[] BestBoardValue = new double[5];
 
-                    // Set BestMoveValue to the result of the miniMax method.
-                    //BestMoveValue = miniMax(ref currentBoard, double.MinValue, double.MaxValue, BoardDepth);
+                    // Initialize the BestBoarValue using the miniMax algorithm to find the best move with the given BoardDepth.
+                    BestBoardValue = miniMax(ref currentBoard, double.MinValue, double.MaxValue, BoardDepth);
 
-                    // Set the best move to the best move value.
-                    /*bestMove[0] = new Square((int)BestMoveValue[1], (int)BestMoveValue[2]);*/
+                    // Set the bestMove via BestBoardValue;.
+                    bestMove[0].row = (int)BestBoardValue[1]; bestMove[0].column = (int)BestBoardValue[2]; bestMove[1].row = (int)BestBoardValue[3]; bestMove[1].column = (int)BestBoardValue[4];
 
-                    // Condition to test if miniMax could not find a move.
-
-                  
-
-                    double[] value = new double[5];
-
-                    value = miniMax(ref currentBoard, double.MinValue, double.MaxValue, BoardDepth);
-
-                    bestMove[0].row = (int)value[1]; bestMove[0].column = (int)value[2]; bestMove[1].row = (int)value[3]; bestMove[1].column = (int)value[4];
-
+                    // Condition to test if miniMax found a best move use the getBestMove method if not.
                     if (bestMove[0].row == 0 && bestMove[0].column == 0 && bestMove[1].row == 0 && bestMove[1].column == 0)
                     {
                         bestMove = getBestMove(ref currentBoard); // Set best move the best move that can be found in one iteration.
                     }
 
+                    // Declare and initalize Move string to be inserted into the ChessDatabase.
+                    string Move = (bestMove[0].row * 8 + bestMove[0].column) + " " + (bestMove[1].row * 8 + bestMove[1].column);
+
+                    Console.WriteLine($"{boardState} {Move}");
+
+                    // Update the ChessDatabase with the best move found.
+                    dbUpdateAddRecord(boardState,BoardDepth, Move);
 
                     // Change the BoardState base on the bestMove
                     ChessBoard.ChangeBoardState((bestMove[0].row * 8 + bestMove[0].column));
 
                     ViewModel.UpdateBoard();
-
-                    //Thread.Sleep(5000);
 
                     ChessBoard.ChangeBoardState((bestMove[1].row * 8 + bestMove[1].column));
 
@@ -111,6 +129,127 @@ namespace ChessV2
                 Thread.Sleep(1000);
                
             }
+        }
+
+        private int[] dbRetrieveMove(string boardState)
+        {
+            // String to select the entry in the data base with the boardstate if it exists.
+            string selectSQL = "SELECT TOP 1 * FROM ChessTable WHERE BoardState='" + boardState + "' AND Depth ='" + BoardDepth + "'";
+
+            // Get the DataTable resulting from the select query.
+            DataTable tbl = ChessDB.GetDataTable(selectSQL);
+
+            // Initialize bestMove.
+            int[] bestMove = new int[2]; bestMove[0] = 0; bestMove[1] = 0;
+
+            // Condtion to test if the query had a result.
+            if (tbl.Rows.Count != 0)
+            {
+                // Get the Moves string.
+                string dbMoves = tbl.Rows[0]["Moves"].ToString();
+                string[] MoveSplit = dbMoves.Split("Black".ToCharArray(),StringSplitOptions.RemoveEmptyEntries);
+
+                // Condition to test which players turn it is.
+                if (ChessBoard.BoardState.WhitesMove)
+                {
+                    // Declare and initialize moveS to be a possible white move.
+                    string moveS = MoveSplit[0].Trim("White ".ToCharArray());
+                    // Conditon to test if moveS has a move.
+                    if (moveS.Length > 0)
+                    {
+                        // Set bestMove to the move found in the database.
+                        bestMove = moveS.Split(' ').Select(m => int.Parse(m)).ToArray(); 
+                        return bestMove;
+                    }
+                   
+                }
+                else
+                {
+                    // Declare and initialize moveS to be a possible black move.
+                    string moveS = MoveSplit[1].Trim();
+                    if (moveS.Length > 0)
+                    {
+                        // Set bestMove to the move found in the database.
+                        bestMove = moveS.Split(' ').Select(m => int.Parse(m)).ToArray();
+                        return bestMove;
+                    }
+                }
+            }
+            return bestMove;
+        }
+
+        // Method to return the string that represents the chess board state.
+        private string getBoardString(ref ChessBoardState boardState)
+        {
+            string state = "";
+            for(int i = 0; i < 8; i++)
+            {
+                for(int j = 0; j < 8; j++)
+                {
+                    state += boardState.Board[i, j].ToString();
+                }
+            }
+            return state;
+        }
+
+        // Method to update the Chess Database.
+        private string dbUpdateAddRecord(string boardState, int Depth, string Moves)
+        {
+            // String to select the entry in the data base with the boardstate if it exists.
+            string selectSQL = "SELECT TOP 1 * FROM ChessTable WHERE BoardState='" + boardState + "' AND Depth ='" + Depth + "'";
+
+            // Get the DataTable resulting from the select query.
+            DataTable tbl = ChessDB.GetDataTable(selectSQL);
+
+            // Declare insertSQL string to hold the insert query.
+            string insertSQL = "";
+
+            // Condition to test if the data table has entries. The boardState has been entered before.
+            if (tbl.Rows.Count == 0)
+            {
+                
+                // Condition to test whos move is being entered.
+                if (ChessBoard.BoardState.WhitesMove)
+                {
+                    insertSQL = "INSERT INTO ChessTable(BoardState, Depth, Moves) VALUES('" + boardState + "', '" +  Depth + ("', 'White " + Moves + " Black") + "')"; // Insert White move.
+                }
+                else
+                {
+                    insertSQL = "INSERT INTO ChessTable(BoardState, Depth, Moves) VALUES('" + boardState + "', '" + Depth +  ("', 'White " + "Black " + Moves) + "')"; // Insert Black move.
+                }
+
+                // Execute the INSERT.
+                ChessDB.ExecuteSQL(insertSQL);
+
+                tbl = ChessDB.GetDataTable(selectSQL);
+
+                return tbl.Rows[0]["Moves"].ToString();
+            }
+            else
+            {
+                // Get the Moves string to be updated.
+                string dbMoves = tbl.Rows[0]["Moves"].ToString();
+                // Declare MoveSplit string array to hold the split of the two players moves.
+                string[] MoveSplit = dbMoves.Split("Black".ToCharArray());
+                // Declare string to hold the SQL UPDATE query
+                string updateSQL = "";
+
+                // Condtion to test whos move will be updated.
+                if (ChessBoard.BoardState.WhitesMove)
+                {
+                    updateSQL = "UPDATE ChessTable SET Moves = '" + ("White " + Moves + " Black" + MoveSplit[1]) + "' WHERE BoardState = '" + boardState + "'"; // UPDATE White move.
+                    Console.WriteLine($"White Move UPDATE: {("White " + Moves + " Black" + MoveSplit[1])}" );
+                }
+                else
+                {
+                    updateSQL = "UPDATE ChessTable SET Moves = '" + (MoveSplit[1] + "Black " + Moves) + "' WHERE BoardState = '" + boardState + "'"; // UPDATE Black move.
+                    Console.WriteLine($"Black Move UPDATE: {(MoveSplit[1] + "Black " + Moves)}");
+                }
+
+
+            }
+
+            return tbl.Rows[0]["Moves"].ToString();
         }
 
 
