@@ -42,7 +42,7 @@ namespace ChessV2
             Player = player;
 
             // Initialize BoardDepth to 4.
-            BoardDepth = 4;
+            BoardDepth = 5;
 
             // ThreadStart variable initializes with the start method which the Thread will run.
             ThreadStart engineStart = new ThreadStart(start); 
@@ -127,22 +127,24 @@ namespace ChessV2
                         ViewModel.UpdateBoard();
                     }
 
+                    // Condition to test if GAMEOVER
                     if (ChessBoard.GAMEOVER)
                     {
-                        if (ChessBoard.MATE)
+                        if (ChessBoard.MATE) // Condition to test if it is checkmate.
                         {
                             Console.WriteLine("Checkmate!");
-                            ViewModel.GameOverVisibility = Visibility.Visible;
+                            ViewModel.GameOverVisibility = Visibility.Visible; // Access the ViewModel to change the visability of the end game popup.
+                            // Condition to test who won;
                             if (ChessBoard.BoardState.WhitesMove)
                             {
-                                ViewModel.GameOverText = "Game Over \n Black Won!";
+                                ViewModel.GameOverText = "Game Over \n Black Won!"; // Change game over text to Black won.
                                 return;
                             }
-                            ViewModel.GameOverText = "Game Over \n White Won!";
+                            ViewModel.GameOverText = "Game Over \n White Won!";// Change game over text to White won.
                             return;
                         }
-                        ViewModel.GameOverVisibility = Visibility.Visible;
-                        ViewModel.GameOverText = "Game Over \n Draw";
+                        ViewModel.GameOverVisibility = Visibility.Visible;// Access the ViewModel to change the visability of the end game popup.
+                        ViewModel.GameOverText = "Game Over \n Draw"; // Change game over text to Draw.
                         return;
                     }
 
@@ -268,12 +270,10 @@ namespace ChessV2
                     Console.WriteLine($"Black Move UPDATE: {(MoveSplit[1] + "Black " + Moves)}");
                 }
 
-
             }
 
             return tbl.Rows[0]["Moves"].ToString();
         }
-
 
         // Method to find the best move using the miniMax algorithm.
         private double[] miniMax(ref ChessBoardState currentBoard, double alpha , double beta, int depth)

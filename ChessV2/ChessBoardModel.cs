@@ -296,12 +296,7 @@ namespace ChessV2
 
         public bool gameOver(ref ChessBoardState chessBoardState)
         {
-            ChessBoardState cBoard = cloneChessBoardState(ref chessBoardState);
-
-            List<ChessPiece> playerPieces = chessBoardState.WhitesMove ? cBoard.WhitePieces : cBoard.BlackPieces;
-
             // Condition to test that there has been a move.
-            
             if (chessBoardState.BoardPositions.Count > 0)
             {
                 // Declare currentPosition to be the last position in the BoardPositions list.
@@ -316,27 +311,32 @@ namespace ChessV2
                     return true; // the Game is a draw by repitition.
                 }
             }
-            
+
+            ChessPiece selectedPiece = chessBoardState.SelectedPiece;
+
+            List<ChessPiece> playerPieces = chessBoardState.WhitesMove ? chessBoardState.WhitePieces : chessBoardState.BlackPieces;
 
             ChessPiece[] bgChanges = new ChessPiece[backGroundChanges.Count];
             backGroundChanges.CopyTo(bgChanges);
 
             for (int i = 0; i < playerPieces.Count; i++)
             {
-                cBoard.SelectedPiece = playerPieces[i];
-                if (getValidMoves(ref cBoard).Count != 0)
+                chessBoardState.SelectedPiece = playerPieces[i];
+                if (getValidMoves(ref chessBoardState).Count != 0)
                 {
                     backGroundChanges.AddRange(bgChanges);
                     return false;
                 }
             }
-            cBoard.WhitesMove = !cBoard.WhitesMove;
-            if (Check(ref cBoard))
+            chessBoardState.WhitesMove = !chessBoardState.WhitesMove;
+            if (Check(ref chessBoardState))
             {
                 MATE = true;
             }
-            cBoard.WhitesMove = !cBoard.WhitesMove;
+            chessBoardState.WhitesMove = !chessBoardState.WhitesMove;
             backGroundChanges.AddRange(bgChanges);
+
+            chessBoardState.SelectedPiece = selectedPiece;
 
             return true;
         }
@@ -359,6 +359,8 @@ namespace ChessV2
 
 
         }
+
+        #region movePiece Methods
 
         public void movePiece(ref ChessBoardState chessBoardState, Square square)
         {
@@ -653,7 +655,9 @@ namespace ChessV2
             }
         }
 
+        #endregion
 
+        #region getValidMoves Methods
         // Method to return the valid moves of the selected piece.
         public List<Square> getValidMoves(ref ChessBoardState chessBoardState)
         {
@@ -781,6 +785,8 @@ namespace ChessV2
             }
             return potentialMoves;
         }
+
+        #endregion
 
         // Method to clone a ChessBoardState
         public ChessBoardState cloneChessBoardState(ref ChessBoardState chessBoardState)
