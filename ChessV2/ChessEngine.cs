@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using static ChessV2.ChessBoardModel;
 
 namespace ChessV2
@@ -41,7 +42,7 @@ namespace ChessV2
             Player = player;
 
             // Initialize BoardDepth to 4.
-            BoardDepth = 5;
+            BoardDepth = 4;
 
             // ThreadStart variable initializes with the start method which the Thread will run.
             ThreadStart engineStart = new ThreadStart(start); 
@@ -72,8 +73,9 @@ namespace ChessV2
                     int[] dbBestMove = dbRetrieveMove(boardState);
 
                     // Condition to test if a best move was found.
-                    if(!(dbBestMove[0] == 0 && dbBestMove[1] == 0))
+                    if (!(dbBestMove[0] == 0 && dbBestMove[1] == 0))
                     {
+                        Console.WriteLine($"Player: {ChessBoard.BoardState.WhitesMove} dbBestMove: {dbBestMove[0]} {dbBestMove[1]}");
 
                         // Change the BoardState based on the dbBestMove
                         ChessBoard.ChangeBoardState(dbBestMove[0]);
@@ -83,46 +85,66 @@ namespace ChessV2
                         ChessBoard.ChangeBoardState(dbBestMove[1]);
 
                         ViewModel.UpdateBoard();
-                        continue;
                     }
-
-                    // Initialize bestMove to hold the best move the Engine can find.
-                    Square[] bestMove = new Square[2]; bestMove[0] = new Square(0, 0); bestMove[1] = new Square(0, 0); 
-
-                    // Declare and initialize currentBoard to be a clone of the current BoardState.
-                    ChessBoardState currentBoard = ChessBoard.cloneChessBoardState(ref ChessBoard.BoardState);
-
-                    // Variable to hold the best board value and the best move.
-                    double[] BestBoardValue = new double[5];
-
-                    // Initialize the BestBoarValue using the miniMax algorithm to find the best move with the given BoardDepth.
-                    BestBoardValue = miniMax(ref currentBoard, double.MinValue, double.MaxValue, BoardDepth);
-
-                    // Set the bestMove via BestBoardValue;.
-                    bestMove[0].row = (int)BestBoardValue[1]; bestMove[0].column = (int)BestBoardValue[2]; bestMove[1].row = (int)BestBoardValue[3]; bestMove[1].column = (int)BestBoardValue[4];
-
-                    // Condition to test if miniMax found a best move use the getBestMove method if not.
-                    if (bestMove[0].row == 0 && bestMove[0].column == 0 && bestMove[1].row == 0 && bestMove[1].column == 0)
+                    else
                     {
-                        bestMove = getBestMove(ref currentBoard); // Set best move the best move that can be found in one iteration.
+                        // Initialize bestMove to hold the best move the Engine can find.
+                        Square[] bestMove = new Square[2]; bestMove[0] = new Square(0, 0); bestMove[1] = new Square(0, 0);
+
+                        // Declare and initialize currentBoard to be a clone of the current BoardState.
+                        ChessBoardState currentBoard = ChessBoard.cloneChessBoardState(ref ChessBoard.BoardState);
+
+                        // Variable to hold the best board value and the best move.
+                        double[] BestBoardValue = new double[5];
+
+                        // Initialize the BestBoarValue using the miniMax algorithm to find the best move with the given BoardDepth.
+                        BestBoardValue = miniMax(ref currentBoard, double.MinValue, double.MaxValue, BoardDepth);
+
+                        // Set the bestMove via BestBoardValue;.
+                        bestMove[0].row = (int)BestBoardValue[1]; bestMove[0].column = (int)BestBoardValue[2]; bestMove[1].row = (int)BestBoardValue[3]; bestMove[1].column = (int)BestBoardValue[4];
+
+                        // Condition to test if miniMax found a best move use the getBestMove method if not.
+                        if (bestMove[0].row == 0 && bestMove[0].column == 0 && bestMove[1].row == 0 && bestMove[1].column == 0)
+                        {
+                            bestMove = getBestMove(ref currentBoard); // Set best move the best move that can be found in one iteration.
+                        }
+
+                        // Declare and initalize Move string to be inserted into the ChessDatabase.
+                        string Move = (bestMove[0].row * 8 + bestMove[0].column) + " " + (bestMove[1].row * 8 + bestMove[1].column);
+
+                        Console.WriteLine($"Player: {ChessBoard.BoardState.WhitesMove} miniMaxBestMove: {Move}");
+
+                        // Update the ChessDatabase with the best move found.
+                        dbUpdateAddRecord(boardState, BoardDepth, Move);
+
+                        // Change the BoardState base on the bestMove
+                        ChessBoard.ChangeBoardState((bestMove[0].row * 8 + bestMove[0].column));
+
+                        ViewModel.UpdateBoard();
+
+                        ChessBoard.ChangeBoardState((bestMove[1].row * 8 + bestMove[1].column));
+
+                        ViewModel.UpdateBoard();
                     }
 
-                    // Declare and initalize Move string to be inserted into the ChessDatabase.
-                    string Move = (bestMove[0].row * 8 + bestMove[0].column) + " " + (bestMove[1].row * 8 + bestMove[1].column);
-
-                    Console.WriteLine($"{boardState} {Move}");
-
-                    // Update the ChessDatabase with the best move found.
-                    dbUpdateAddRecord(boardState,BoardDepth, Move);
-
-                    // Change the BoardState base on the bestMove
-                    ChessBoard.ChangeBoardState((bestMove[0].row * 8 + bestMove[0].column));
-
-                    ViewModel.UpdateBoard();
-
-                    ChessBoard.ChangeBoardState((bestMove[1].row * 8 + bestMove[1].column));
-
-                    ViewModel.UpdateBoard();
+                    if (ChessBoard.GAMEOVER)
+                    {
+                        if (ChessBoard.MATE)
+                        {
+                            Console.WriteLine("Checkmate!");
+                            ViewModel.GameOverVisibility = Visibility.Visible;
+                            if (ChessBoard.BoardState.WhitesMove)
+                            {
+                                ViewModel.GameOverText = "Game Over \n Black Won!";
+                                return;
+                            }
+                            ViewModel.GameOverText = "Game Over \n White Won!";
+                            return;
+                        }
+                        ViewModel.GameOverVisibility = Visibility.Visible;
+                        ViewModel.GameOverText = "Game Over \n Draw";
+                        return;
+                    }
 
                 }
 
@@ -299,7 +321,7 @@ namespace ChessV2
                     // set Selected piece to piece.
                     currentBoard.SelectedPiece = piece;
                     // Initialize moves for the selected piece.
-                    List<Square> moves = ChessBoard.getValidMoves(ref currentBoard);
+                    List<Square> moves = ChessBoard.getPotentialMoves(ref currentBoard);
 
                     // Iterate through piece moves.
                     foreach(Square move in moves)
@@ -316,17 +338,15 @@ namespace ChessV2
                         // Recursive call to find the value at the lower board depth.
                         double v = miniMax(ref Board, a, beta, depth - 1)[0];
 
-                        // Reselect piece. 
-                       // Board.SelectedPiece = piece;
-
                         // Condition to test if the value of makeing this move is the best move so far.
-                        if(v > value[0])
+                        if(v > value[0] && validMove(ref Board, ref currentBoard))
                         {
                             // Set first position of value to v.
                             value[0] = v;
                             // Condition to test if is is the base depth to set the best move.
                             if(depth == BoardDepth)
                             {
+                                Console.WriteLine($"Player: White miniMaxBestMove: {v}");
                                 // Set the best move to this move.
                                 value[1] = piece.square.row; value[2] = piece.square.column; value[3] = move.row; value[4] = move.column;
                             }
@@ -386,17 +406,15 @@ namespace ChessV2
                         // Recursive call to find the value at the lower board depth.
                         double v = miniMax(ref Board, alpha, b, depth - 1)[0];
 
-                        // Reselect piece. 
-                        Board.SelectedPiece = piece;
-
                         // Condition to test if the value of makeing this move is the best move so far.
-                        if (v < value[0])
+                        if (v < value[0] && validMove(ref Board, ref currentBoard))
                         {
                             // Set first position of value to v.
                             value[0] = v;
                             // Condition to test if is is the base depth to set the best move.
                             if (depth == BoardDepth)
                             {
+                                Console.WriteLine($"Player: Black miniMaxBestMove: {v}");
                                 // Set the best move to this move.
                                 value[1] = piece.square.row; value[2] = piece.square.column; value[3] = move.row; value[4] = move.column;
                             }
@@ -421,6 +439,67 @@ namespace ChessV2
             }
 
             throw new NotImplementedException();
+        }
+
+        private bool validMove(ref ChessBoardState movedBoard, ref ChessBoardState currentBoard)
+        {
+            // Condition to test if the player is in check making the move invalid
+            if (!ChessBoard.Check(ref movedBoard))
+            {
+                // Condition to test if it was a king move potentially doing an illegal castle.
+                if(movedBoard.SelectedPiece.piece == Pieces.wk || movedBoard.SelectedPiece.piece == Pieces.bk)
+                {
+                    // Conditio to test if a King side castle occured
+                    if(movedBoard.SelectedPiece.square.row == currentBoard.SelectedPiece.square.row &&
+                        (movedBoard.SelectedPiece.square.column == (currentBoard.SelectedPiece.square.column + 2)  || movedBoard.SelectedPiece.square.column == (currentBoard.SelectedPiece.square.column - 2)))
+                    {
+                        // Save selectedPiece to revert the board after operations.
+                        ChessPiece selectedPiece = movedBoard.SelectedPiece;
+
+                        // Initialize variable to hold other players pieces to test if a castle through Check occured.
+                        List<ChessPiece> otherPlayersPieces = currentBoard.WhitesMove ? movedBoard.BlackPieces : movedBoard.WhitePieces;
+
+                        // Declare the square that the king moved though to castle.
+                        Square castleSquare;
+
+                        // condition to test which side was castled to.
+                        if (movedBoard.SelectedPiece.square.column == (currentBoard.SelectedPiece.square.column + 2))
+                        {
+                            castleSquare = new Square(movedBoard.SelectedPiece.square.row, movedBoard.SelectedPiece.square.column - 1);// King side
+                        }
+                        else
+                        {
+                            castleSquare = new Square(movedBoard.SelectedPiece.square.row, movedBoard.SelectedPiece.square.column + 1);// Queen sied
+                        }
+                         
+                        // Loop to test if any of the otherPlayersPieces attacked the castleSquare. 
+                        foreach(ChessPiece op in otherPlayersPieces)
+                        {
+                            // Set Selected piece to the other players piece.
+                            movedBoard.SelectedPiece = op;
+                            // Get the potential moves of the op piece
+                            List<Square> playerPotentialMoves = ChessBoard.getPotentialMoves(ref movedBoard);
+
+                            // Loop to test if any of the potential moves are the castleSquare.
+                            foreach(Square s in playerPotentialMoves)
+                            {
+                                if (s.Equals(castleSquare))
+                                {
+                                    movedBoard.SelectedPiece = selectedPiece; // Reset SelectedPiece
+                                    return false;
+                                }
+                            }
+                        }
+                        movedBoard.SelectedPiece = selectedPiece; // Reset SelectedPiece
+                    }
+                    return true;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         // Method to get the best move given a ChessBoardState.

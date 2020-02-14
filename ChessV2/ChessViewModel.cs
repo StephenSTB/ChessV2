@@ -406,15 +406,6 @@ namespace ChessV2
                 return;
             }
 
-            if (ChessBoard.BoardState.promotePawn)
-            {
-                PawnPromotion();
-                // Condition to test if the Chess Engine has a pawn promotion.
-                if ((ChessBoard.BoardState.WhitesMove && ChessEnginePlayer[0] == true) || (!ChessBoard.BoardState.WhitesMove && ChessEnginePlayer[1] == true))
-                {
-                    PromotePawn(3); // promote to a queen. 
-                }
-            }
             //Console.WriteLine(square);
 
         }

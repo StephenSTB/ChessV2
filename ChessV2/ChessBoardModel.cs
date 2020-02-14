@@ -260,9 +260,6 @@ namespace ChessV2
                 //Console.WriteLine("Found Valid Square");
                 movePiece(ref BoardState, square);
 
-                // Add the current board position to the list of previous board positions. (help detect stalemate)
-                addBoardPosition(ref BoardState);
-
                 BoardState.WhitesMove = !BoardState.WhitesMove;
 
                 if (gameOver(ref BoardState))
@@ -288,7 +285,7 @@ namespace ChessV2
                 for(int j = 0; j < 8; j++)
                 {
                     // Add square's piece to the boardPostition string.
-                    boardPosition += BoardState.Board[i, j].ToString();
+                    boardPosition += currentBoard.Board[i, j].ToString();
                 }
             }
 
@@ -296,11 +293,30 @@ namespace ChessV2
             currentBoard.BoardPositions.Add(boardPosition);
         }
 
+
         public bool gameOver(ref ChessBoardState chessBoardState)
         {
             ChessBoardState cBoard = cloneChessBoardState(ref chessBoardState);
 
             List<ChessPiece> playerPieces = chessBoardState.WhitesMove ? cBoard.WhitePieces : cBoard.BlackPieces;
+
+            // Condition to test that there has been a move.
+            
+            if (chessBoardState.BoardPositions.Count > 0)
+            {
+                // Declare currentPosition to be the last position in the BoardPositions list.
+                string currentPosition = chessBoardState.BoardPositions[chessBoardState.BoardPositions.Count - 1];
+
+                // Declare Duplicate Positions list to find the list of positions that are the same as the currentPosition.
+                List<string> DuplicatePositions = chessBoardState.BoardPositions.FindAll(p => p.Equals(currentPosition));
+
+                // Condition to test that the position has been reached 3 times indicating a draw.
+                if (DuplicatePositions.Count == 3)
+                {
+                    return true; // the Game is a draw by repitition.
+                }
+            }
+            
 
             ChessPiece[] bgChanges = new ChessPiece[backGroundChanges.Count];
             backGroundChanges.CopyTo(bgChanges);
@@ -321,6 +337,7 @@ namespace ChessV2
             }
             cBoard.WhitesMove = !cBoard.WhitesMove;
             backGroundChanges.AddRange(bgChanges);
+
             return true;
         }
 
@@ -404,6 +421,9 @@ namespace ChessV2
             backGroundChanges.Add(newPiece);
 
             chessBoardState.ValidMoves = new List<Square>();
+
+            // Add the current board position to the list of previous board positions. (help detect stalemate)
+            addBoardPosition(ref chessBoardState);
         }
 
         private void PawnPromotion(ref ChessBoardState chessBoardState, Square square)
@@ -736,7 +756,7 @@ namespace ChessV2
             return false;
         }
 
-        private List<Square> getPotentialMoves(ref ChessBoardState chessBoardState)
+        public List<Square> getPotentialMoves(ref ChessBoardState chessBoardState)
         {
             List<Square> potentialMoves = new List<Square>();
 
@@ -823,6 +843,9 @@ namespace ChessV2
             cBoard.WhiteAlwaysQueen = chessBoardState.WhiteAlwaysQueen;
 
             cBoard.BlackAlwaysQueen = chessBoardState.BlackAlwaysQueen;
+
+            
+            cBoard.BoardPositions = new List<string>();
 
             foreach(string s in chessBoardState.BoardPositions)
             {
