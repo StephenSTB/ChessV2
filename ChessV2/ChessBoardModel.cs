@@ -85,9 +85,12 @@ namespace ChessV2
             public bool BlackAlwaysQueen;
 
             public List<string> BoardPositions;
+
         }
         // The Chess board state representing this ChessBoardModel
         public ChessBoardState BoardState;
+
+        
 
         // Variable to determine if a piece to move was previously selected.
         public bool PieceSelected;
@@ -131,7 +134,6 @@ namespace ChessV2
             QueenMoves = new QueenMoves();
 
         }
-
 
         public void InitializeBoardState()
         {
@@ -194,7 +196,6 @@ namespace ChessV2
                 }
             }
 
-
             // Add White pieces to list and dictionary.
             for (int i = 6; i < 8; i++)
             {
@@ -233,6 +234,7 @@ namespace ChessV2
             BoardState.promotePawn = false;
 
             BoardState.BoardPositions = new List<string>();
+
         }
 
         // Changes the state of the chessboard (players moves).
@@ -260,17 +262,15 @@ namespace ChessV2
                 //Console.WriteLine("Found Valid Square");
                 movePiece(ref BoardState, square);
 
-                BoardState.WhitesMove = !BoardState.WhitesMove;
-
                 if (gameOver(ref BoardState))
                 {
                     GAMEOVER = true;
                 }
             }
             PieceSelected = !PieceSelected;
-            BoardState.ValidMoves = new List<Square>();
+            // Clear ValidMoves;
+            BoardState.ValidMoves.Clear();
             updateForeground();
-
         }
 
         // Adds the current board position to the list of board positions
@@ -364,19 +364,26 @@ namespace ChessV2
 
         public void movePiece(ref ChessBoardState chessBoardState, Square square)
         {
-            backGroundChanges = new List<ChessPiece>();
+            // Cleare backGroundChanges List.
+            backGroundChanges.Clear();
 
+            // Call to KingMove Method to handle King move conditions.
             KingMove(ref chessBoardState, square);
 
+            // Call to RookMove Method to handle Rook move conditions.
             RookMove(ref chessBoardState);
 
-            enPassant(ref chessBoardState, square);
+            // Call to enPassant Method to handle enPassant move conditions.
+            EnPassant(ref chessBoardState, square);
 
+            // Call to PawnPromotion Method to handle PawnPromotion move conditions.
             PawnPromotion(ref chessBoardState, square);
 
             // Remove the other players piece.
             if (otherPlayerPiece(square, ref chessBoardState))
             {
+
+                // Initialize otherPlayerList to the other players ChessPiece List.
                 List<ChessPiece> otherPlayerList = chessBoardState.WhitesMove ? chessBoardState.BlackPieces : chessBoardState.WhitePieces;
 
                 ChessPiece capturedPiece = otherPlayerList.Find(x => x.square.Equals(square));
@@ -394,26 +401,24 @@ namespace ChessV2
 
             List<ChessPiece> currentPlayerList = chessBoardState.WhitesMove ? chessBoardState.WhitePieces : chessBoardState.BlackPieces;
 
+            Square selectedPieceSquare = chessBoardState.SelectedPiece.square;
+            
+            // Remove the Selected Piece from the current players ChessPiece List.
             currentPlayerList.Remove(chessBoardState.SelectedPiece);
 
+            // Set the Board SelectedPiece position to blank.
             chessBoardState.Board[chessBoardState.SelectedPiece.square.row, chessBoardState.SelectedPiece.square.column] = Pieces.blnk;
 
+            // Set the Boards square position to the SelectedPiece.
             chessBoardState.Board[square.row, square.column] = chessBoardState.SelectedPiece.piece;
 
+            // Create a newPiece representing the new ChessPiece.
             ChessPiece newPiece = new ChessPiece(chessBoardState.SelectedPiece.piece, square);
 
+            // Add the newPiece to the current players ChessPiece List.
             currentPlayerList.Add(newPiece);
 
             //Console.WriteLine(currentPlayerList.Count);
-
-            if (chessBoardState.WhitesMove)
-            {
-                chessBoardState.WhitePieces = currentPlayerList;
-            }
-            else
-            {
-                chessBoardState.BlackPieces = currentPlayerList;
-            }
 
             ChessPiece blnk = new ChessPiece(ChessBoardModel.Pieces.blnk, chessBoardState.SelectedPiece.square);
 
@@ -422,24 +427,33 @@ namespace ChessV2
             backGroundChanges.Add(blnk);
             backGroundChanges.Add(newPiece);
 
-            chessBoardState.ValidMoves = new List<Square>();
+            // Clear ValidMoves List.
+            chessBoardState.ValidMoves.Clear();
 
             // Add the current board position to the list of previous board positions. (help detect stalemate)
             addBoardPosition(ref chessBoardState);
+
+            // Change the players move.
+            chessBoardState.WhitesMove = !chessBoardState.WhitesMove;
         }
 
         private void PawnPromotion(ref ChessBoardState chessBoardState, Square square)
         {
+            // Condition to test if the SelectedPiece is a pawn.
             if (chessBoardState.SelectedPiece.piece == Pieces.wp || chessBoardState.SelectedPiece.piece == Pieces.bp)
             {
+                // Initialize backRank to be the row of the other players backRank.
                 int backRank = chessBoardState.WhitesMove ? 0 : 7;
+                // Condtion to test if the row the pawn is being moved to is the backRank.
                 if (square.row == backRank)
                 {
+                    // Condition to test if it is WhitesMove and to queen.
                     if (chessBoardState.WhitesMove && chessBoardState.WhiteAlwaysQueen)
                     {
                         chessBoardState.SelectedPiece.piece = Pieces.wq;
                         return;
                     }
+                    // Condition to test if it is BlacksMove and to queen.
                     if (!chessBoardState.WhitesMove && chessBoardState.BlackAlwaysQueen)
                     {
                         chessBoardState.SelectedPiece.piece = Pieces.bq;
@@ -502,64 +516,85 @@ namespace ChessV2
             return;
         }
 
-        private void enPassant(ref ChessBoardState chessBoardState, Square square)
+        // Method to handle En Passant move conditions.
+        private void EnPassant(ref ChessBoardState chessBoardState, Square square)
         {
+
+            // Declare new enPassantePieces ChessPiece List.
+            chessBoardState.enPassantPieces = new List<ChessPiece>();
+
+            // Condition to test if the Selected Piece is a pawn.
             if (chessBoardState.SelectedPiece.piece == Pieces.wp || chessBoardState.SelectedPiece.piece == Pieces.bp)
-            {
+            { 
+                // Initialize pawn offset depending whos move it is.
                 int pawnOffset = chessBoardState.WhitesMove ? -1 : 1;
+
                 // Conditon to test if the pawn is moving two spaces ahead indicating a potential en passant.
                 if (chessBoardState.SelectedPiece.square.row + (2 * pawnOffset) == square.row)
                 {
+                    // Initialize otherPawn to be the other players pawn piece.
                     Pieces otherPawn = chessBoardState.WhitesMove ? Pieces.bp : Pieces.wp;
+
+                    // condition to test if an adjacent column exists.
                     if (square.column - 1 >= 0)
                     {
+                        // Condition to test if the piece next to the current pawn is a pawn of the other players pieces.
                         if (chessBoardState.Board[square.row, square.column - 1] == otherPawn)
                         {
+                            // Add the current players pawn to the enPassantPieces.
                             chessBoardState.enPassantPieces.Add(new ChessPiece(chessBoardState.Board[square.row, square.column - 1], square.row, square.column - 1));
+                            // Set the enPassantMove to the square behind the adjacent pawn attacked.
                             chessBoardState.enPassantMove = new Square(square.row - pawnOffset, square.column);
                         }
                     }
+                    // condition to test if an adjacent column exists.
                     if (square.column + 1 < 8)
                     {
+                        // Condition to test if the pices next to the current pawn is a pawn of the other players pieces.
                         if (chessBoardState.Board[square.row, square.column + 1] == otherPawn)
                         {
+                            // Add the current players pawn to the enPassantPieces.
                             chessBoardState.enPassantPieces.Add(new ChessPiece(chessBoardState.Board[square.row, square.column + 1], square.row, square.column + 1));
+                            // Set the enPassantMove to the square behind the adjacent pawn attacked.
                             chessBoardState.enPassantMove = new Square(square.row - pawnOffset, square.column);
                         }
                     }
                     return;
                 }
+                
                 // Condition to test if the pawn move being made is an enpassant move.
                 if (square.Equals(chessBoardState.enPassantMove))
                 {
                     // remove the other players pawn.
                     int row = square.row - pawnOffset; int column = square.column;
 
+                    // Set the other players pawn location to blank piece.
                     chessBoardState.Board[row, column] = Pieces.blnk;
 
+                    // Initialize otherPlayerList to the other players ChessPiece List.
                     List<ChessPiece> otherPlayerList = chessBoardState.WhitesMove ? chessBoardState.BlackPieces : chessBoardState.WhitePieces;
-
+                    
+                    // Initialize capturedPiece to be the piece captured by enpassant.
                     ChessPiece capturedPiece = otherPlayerList.Find(x => x.square.Equals(new Square(row, column)));
+                    // Remove the capturedPiece from the otherPlayerList.
                     otherPlayerList.Remove(capturedPiece);
 
-                    if (chessBoardState.WhitesMove)
-                    {
-                        chessBoardState.BlackPieces = otherPlayerList;
-                    }
-                    else
-                    {
-                        chessBoardState.WhitePieces = otherPlayerList;
-                    }
+                    // Set the captured pieces square to blank.
                     ChessPiece blnk = new ChessPiece(Pieces.blnk, new Square(row, column));
+                    // Add blank Square to backGroundChanges.
                     backGroundChanges.Add(blnk);
                 }
             }
+           
         }
 
+        // Method to test if a rook is being moved.
         private void RookMove(ref ChessBoardState chessBoardState)
         {
+            // Condition to test if the Selected Piece is a rook.
             if (chessBoardState.SelectedPiece.piece == Pieces.wr || chessBoardState.SelectedPiece.piece == Pieces.br)
             {
+                // Condition to test if it is WhitesMove
                 if (chessBoardState.WhitesMove)
                 {
                     // White King rook
@@ -587,69 +622,111 @@ namespace ChessV2
             }
         }
 
+        // Method to handle King moves.
         private void KingMove(ref ChessBoardState chessBoardState, Square square)
         {
+            // Condition to test if the SelectedPiece is a king.
             if (chessBoardState.SelectedPiece.piece == Pieces.wk || chessBoardState.SelectedPiece.piece == Pieces.bk)
             {
+                // Initialize currentPlayerList to the current players ChessPiece List.
                 List<ChessPiece> currentPlayerList = chessBoardState.WhitesMove ? chessBoardState.WhitePieces : chessBoardState.BlackPieces;
+
+                // Initialize the KingSquare to the current players King Square.
                 Square KingSquare = chessBoardState.WhitesMove ? chessBoardState.WhiteKingSquare : chessBoardState.BlackKingSquare;
+
+                // Initialize the KingMoved bool to the current KindMoved bool.
                 bool KingMoved = chessBoardState.WhitesMove ? chessBoardState.WhiteKingMoved : chessBoardState.BlackKingMoved;
+
+                // Initialize the prevKingMoved bool to the current KingMoved bool
+                bool prevKingMoved = chessBoardState.WhitesMove ? chessBoardState.WhiteKingMoved : chessBoardState.BlackKingMoved;
+
+                // Initialize the RooksMoved bool array to the current players Rooks Moved array.
                 bool[] RooksMoved = chessBoardState.WhitesMove ? chessBoardState.WhiteRooksMoved : chessBoardState.BlackRooksMoved;
+
+                // Initialize the rook to current players rook piece;
                 Pieces rook = chessBoardState.WhitesMove ? Pieces.wr : Pieces.br;
 
+                // Condition to test if the King has been moved.
                 if (!KingMoved)
                 {
                     //King Side Castle
                     if (square.Equals(new Square(KingSquare.row, 6)))
                     {
+                        // Set King Side rook to true;
                         RooksMoved[0] = true;
 
+                        // Remove the King side rook from the currentPlayer ChessPiece List.
                         currentPlayerList.Remove(new ChessPiece(rook, new Square(KingSquare.row, 7)));
 
+                        // Set Board King side rook square to blank.
                         chessBoardState.Board[KingSquare.row, 7] = Pieces.blnk;
 
+                        // Set Board King side rook castling square to rook.
                         chessBoardState.Board[KingSquare.row, 5] = rook;
 
+                        // Initialize newRook ChessPiece to reprent the new rook.
                         ChessPiece newRook = new ChessPiece(rook, new Square(KingSquare.row, 5));
 
+                        // Add the newRook to the currentPlayers ChessPieces
                         currentPlayerList.Add(newRook);
 
+                        // Add new Blank and rook ChessPieces to the backgroundChanges.
                         backGroundChanges.Add(new ChessPiece(Pieces.blnk, new Square(KingSquare.row, 7)));
                         backGroundChanges.Add(newRook);
                     }
                     //Queen Side Castle
                     if (square.Equals(new Square(KingSquare.row, 2)))
                     {
+                        // Set Queen Side rook to true;
                         RooksMoved[1] = true;
 
+                        // Remove the Queen side rook from the currentPlayer ChessPiece List.
                         currentPlayerList.Remove(new ChessPiece(rook, new Square(KingSquare.row, 0)));
 
+                        // Set Board Queen side rook square to blank.
                         chessBoardState.Board[KingSquare.row, 0] = Pieces.blnk;
 
+                        // Set Board Queen side rook castling square to rook.
                         chessBoardState.Board[KingSquare.row, 3] = rook;
 
+                        // Initialize newRook ChessPiece to reprent the new rook.
                         ChessPiece newRook = new ChessPiece(rook, new Square(KingSquare.row, 3));
 
+                        // Add the newRook to the currentPlayers ChessPieces
                         currentPlayerList.Add(newRook);
 
+                        // Add new Blank and rook ChessPieces to the backgroundChanges.
                         backGroundChanges.Add(new ChessPiece(Pieces.blnk, new Square(KingSquare.row, 0)));
                         backGroundChanges.Add(newRook);
                     }
                     KingMoved = true;
                 }
 
+                // Condition to test if it is WhitesMove
                 if (chessBoardState.WhitesMove)
                 {
                     chessBoardState.WhitePieces = currentPlayerList;
+
+                    // Update White King moved info
                     chessBoardState.WhiteKingMoved = KingMoved;
+
+                    // Update White Rook moved info
                     chessBoardState.WhiteRooksMoved = RooksMoved;
+                    
+                    // Update ChessBoardState KingSquare info.
                     chessBoardState.WhiteKingSquare = square;
                 }
                 else
                 {
                     chessBoardState.BlackPieces = currentPlayerList;
+
+                    // Update White King moved info
                     chessBoardState.BlackKingMoved = KingMoved;
+
+                    // Update White Rook moved info
                     chessBoardState.BlackRooksMoved = RooksMoved;
+
+                    // Update ChessBoardState KingSquare info.
                     chessBoardState.BlackKingSquare = square;
                 }
             }
@@ -674,8 +751,6 @@ namespace ChessV2
             {
                 //Console.WriteLine($"{potentialMoves[i].row}, {potentialMoves[i].column}");
                 movePiece(ref cBoard, potentialMoves[i]);
-                cBoard.WhitesMove = !cBoard.WhitesMove;
-
                 if (!Check(ref cBoard))
                 {
                     validMoves.Add(potentialMoves[i]);
@@ -693,6 +768,8 @@ namespace ChessV2
             return validMoves;
         }
 
+
+          
         private void validCastling(ref ChessBoardState chessBoardState, ref List<Square> moves)
         {
             //King Side Squares 
@@ -795,20 +872,20 @@ namespace ChessV2
 
             cBoard.WhitesMove = chessBoardState.WhitesMove;
 
-            cBoard.SelectedPiece = new ChessPiece(chessBoardState.SelectedPiece.piece, chessBoardState.SelectedPiece.square.row, chessBoardState.SelectedPiece.square.column);
+            cBoard.SelectedPiece = chessBoardState.SelectedPiece;
 
             cBoard.WhitePieces = new List<ChessPiece>();
 
             cBoard.BlackPieces = new List<ChessPiece>();
 
-            for (int i = 0; i < chessBoardState.WhitePieces.Count; i++)
+            foreach (ChessPiece p in chessBoardState.WhitePieces)
             {
-                cBoard.WhitePieces.Add(new ChessPiece(chessBoardState.WhitePieces[i].piece, chessBoardState.WhitePieces[i].square.row, chessBoardState.WhitePieces[i].square.column));
+                cBoard.WhitePieces.Add(p);
             }
 
-            for (int i = 0; i < chessBoardState.BlackPieces.Count; i++)
+            foreach (ChessPiece p in chessBoardState.BlackPieces)
             {
-                cBoard.BlackPieces.Add(new ChessPiece(chessBoardState.BlackPieces[i].piece, chessBoardState.BlackPieces[i].square.row, chessBoardState.BlackPieces[i].square.column));
+                cBoard.BlackPieces.Add(p);
             }
 
             cBoard.Board = new Pieces[8, 8];
@@ -831,15 +908,15 @@ namespace ChessV2
 
             cBoard.ValidMoves = new List<Square>();
 
-            for (int i = 0; i < chessBoardState.ValidMoves.Count; i++)
+            foreach (Square s in chessBoardState.ValidMoves)
             {
-                cBoard.ValidMoves.Add(new Square(chessBoardState.ValidMoves[i].row, chessBoardState.ValidMoves[i].column));
+                cBoard.ValidMoves.Add(s);
             }
 
             cBoard.enPassantPieces = new List<ChessPiece>();
-            for (int i = 0; i < chessBoardState.enPassantPieces.Count; i++)
+            foreach (ChessPiece p in chessBoardState.enPassantPieces)
             {
-                cBoard.enPassantPieces.Add(new ChessPiece(chessBoardState.enPassantPieces[i].piece, new Square(chessBoardState.enPassantPieces[i].square.row, chessBoardState.enPassantPieces[i].square.column)));
+                cBoard.enPassantPieces.Add(p);
             }
 
             cBoard.enPassantMove = new Square(chessBoardState.enPassantMove.row, chessBoardState.enPassantMove.column);
@@ -850,10 +927,10 @@ namespace ChessV2
 
             cBoard.BlackAlwaysQueen = chessBoardState.BlackAlwaysQueen;
 
-            
+
             cBoard.BoardPositions = new List<string>();
 
-            foreach(string s in chessBoardState.BoardPositions)
+            foreach (string s in chessBoardState.BoardPositions)
             {
                 cBoard.BoardPositions.Add(s);
             }
