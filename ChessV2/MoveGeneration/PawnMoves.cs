@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static ChessV2.ChessBoardModel;
 
 namespace ChessV2
 {
     public class PawnMoves
     {
-        public List<ChessBoardModel.Square> getPotentialMoves(ref ChessBoardModel.ChessBoardState chessBoardState)
+        public List<Square> getPotentialMoves(ref ChessBoardState chessBoardState)
         {
-            List<ChessBoardModel.Square> potentialMoves = new List<ChessBoardModel.Square>();
+            List<Square> potentialMoves = new List<Square>();
 
-            ChessBoardModel.Square s;
+            Square s;
 
             int pawnStart , pawnOffset;
 
@@ -24,32 +25,32 @@ namespace ChessV2
                 return potentialMoves;
             }
 
-            if(chessBoardState.Board[chessBoardState.SelectedPiece.square.row + pawnOffset, chessBoardState.SelectedPiece.square.column] == ChessBoardModel.Pieces.blnk)
+            if(chessBoardState.Board[chessBoardState.SelectedPiece.square.row + pawnOffset, chessBoardState.SelectedPiece.square.column] == Pieces.blnk)
             {
-                s = new ChessBoardModel.Square(chessBoardState.SelectedPiece.square.row + pawnOffset, chessBoardState.SelectedPiece.square.column);
+                s = new Square(chessBoardState.SelectedPiece.square.row + pawnOffset, chessBoardState.SelectedPiece.square.column);
                 potentialMoves.Add(s);
 
                 if(chessBoardState.SelectedPiece.square.row == pawnStart)
                 {
-                    if(chessBoardState.Board[chessBoardState.SelectedPiece.square.row + (2 * pawnOffset), chessBoardState.SelectedPiece.square.column] == ChessBoardModel.Pieces.blnk)
+                    if(chessBoardState.Board[chessBoardState.SelectedPiece.square.row + (2 * pawnOffset), chessBoardState.SelectedPiece.square.column] == Pieces.blnk)
                     {
-                        s = new ChessBoardModel.Square(chessBoardState.SelectedPiece.square.row + (2 * pawnOffset), chessBoardState.SelectedPiece.square.column);
+                        s = new Square(chessBoardState.SelectedPiece.square.row + (2 * pawnOffset), chessBoardState.SelectedPiece.square.column);
                         potentialMoves.Add(s);
                     }
                 }
             }
 
             if(chessBoardState.SelectedPiece.square.column - 1 >= 0){
-                s = new ChessBoardModel.Square(chessBoardState.SelectedPiece.square.row + pawnOffset, chessBoardState.SelectedPiece.square.column - 1);
-                if (ChessBoardModel.otherPlayerPiece(s, ref chessBoardState)){
+                s = new Square(chessBoardState.SelectedPiece.square.row + pawnOffset, chessBoardState.SelectedPiece.square.column - 1);
+                if (otherPlayerPiece(s, ref chessBoardState)){
                     potentialMoves.Add(s);
                 }
             }
 
             if (chessBoardState.SelectedPiece.square.column + 1 < 8)
             {
-                s = new ChessBoardModel.Square(chessBoardState.SelectedPiece.square.row + pawnOffset, chessBoardState.SelectedPiece.square.column + 1);
-                if (ChessBoardModel.otherPlayerPiece(s, ref chessBoardState))
+                s = new Square(chessBoardState.SelectedPiece.square.row + pawnOffset, chessBoardState.SelectedPiece.square.column + 1);
+                if (otherPlayerPiece(s, ref chessBoardState))
                 {
                     potentialMoves.Add(s);
                 }
@@ -68,5 +69,20 @@ namespace ChessV2
             return potentialMoves;
         }
 
+        //Method to test if the selected pawn is attaking the other players king.
+        internal bool attakingKing(ref ChessBoardState chessBoardState)
+        {
+            // Declare otherKingSquare to be the square the other players king is on.
+            Square otherKingSquare = chessBoardState.WhitesMove ? chessBoardState.BlackKingSquare : chessBoardState.WhiteKingSquare;
+
+            int pawnOffset = chessBoardState.WhitesMove ? -1 : 1;
+
+            if((chessBoardState.SelectedPiece.square.row + pawnOffset == otherKingSquare.row) && ((chessBoardState.SelectedPiece.square.column + 1 == otherKingSquare.column) || (chessBoardState.SelectedPiece.square.column - 1  == otherKingSquare.column)))
+            {
+                return true;
+            }
+            
+            return false;
+        }
     }
 }

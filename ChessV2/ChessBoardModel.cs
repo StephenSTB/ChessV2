@@ -247,7 +247,7 @@ namespace ChessV2
             {
                 // condtion to test if the square selected has a piece of the current player.
                 if (currentPlayerPiece(square, ref BoardState))
-                {
+                {  
                     BoardState.SelectedPiece = new ChessPiece(BoardState.Board[square.row, square.column], square);
                     BoardState.ValidMoves = getValidMoves(ref BoardState);
                     PieceSelected = !PieceSelected;
@@ -328,6 +328,7 @@ namespace ChessV2
                     return false;
                 }
             }
+
             chessBoardState.WhitesMove = !chessBoardState.WhitesMove;
             if (Check(ref chessBoardState))
             {
@@ -354,7 +355,7 @@ namespace ChessV2
             }
             if (PieceSelected)
             {
-                currentForeGround.Add(BoardState.SelectedPiece);
+                currentForeGround.Add(new ChessPiece(BoardState.SelectedPiece.piece, BoardState.SelectedPiece.square));
             }
 
 
@@ -388,20 +389,9 @@ namespace ChessV2
 
                 ChessPiece capturedPiece = otherPlayerList.Find(x => x.square.Equals(square));
                 otherPlayerList.Remove(capturedPiece);
-
-                if (chessBoardState.WhitesMove)
-                {
-                    chessBoardState.BlackPieces = otherPlayerList;
-                }
-                else
-                {
-                    chessBoardState.WhitePieces = otherPlayerList;
-                }
             }
 
             List<ChessPiece> currentPlayerList = chessBoardState.WhitesMove ? chessBoardState.WhitePieces : chessBoardState.BlackPieces;
-
-            Square selectedPieceSquare = chessBoardState.SelectedPiece.square;
             
             // Remove the Selected Piece from the current players ChessPiece List.
             currentPlayerList.Remove(chessBoardState.SelectedPiece);
@@ -412,15 +402,16 @@ namespace ChessV2
             // Set the Boards square position to the SelectedPiece.
             chessBoardState.Board[square.row, square.column] = chessBoardState.SelectedPiece.piece;
 
+            // Declare blnk ChessPiece to remove the selected pieces previous position from the board.
+            ChessPiece blnk = new ChessPiece(Pieces.blnk, chessBoardState.SelectedPiece.square);
+
             // Create a newPiece representing the new ChessPiece.
             ChessPiece newPiece = new ChessPiece(chessBoardState.SelectedPiece.piece, square);
 
-            // Add the newPiece to the current players ChessPiece List.
-            currentPlayerList.Add(newPiece);
-
             //Console.WriteLine(currentPlayerList.Count);
 
-            ChessPiece blnk = new ChessPiece(ChessBoardModel.Pieces.blnk, chessBoardState.SelectedPiece.square);
+
+            currentPlayerList.Add(newPiece);
 
             chessBoardState.SelectedPiece = newPiece;
 
@@ -815,7 +806,7 @@ namespace ChessV2
         {
             List<ChessPiece> playersPieces = chessBoardState.WhitesMove ? chessBoardState.WhitePieces : chessBoardState.BlackPieces;
 
-            Square otherKingSquare = chessBoardState.WhitesMove ? chessBoardState.BlackKingSquare : chessBoardState.WhiteKingSquare;
+            //Square otherKingSquare = chessBoardState.WhitesMove ? chessBoardState.BlackKingSquare : chessBoardState.WhiteKingSquare;
 
             ChessPiece selectedPiece = chessBoardState.SelectedPiece;
 
@@ -823,7 +814,7 @@ namespace ChessV2
             {
                 chessBoardState.SelectedPiece = playersPieces[i];
                 //Console.Write($" {chessBoardState.SelectedPiece.piece.ToString()}");
-                List<Square> playerPotentialMoves = getPotentialMoves(ref chessBoardState);
+                /*List<Square> playerPotentialMoves = getPotentialMoves(ref chessBoardState);
                 for (int j = 0; j < playerPotentialMoves.Count; j++)
                 {
                     if (playerPotentialMoves[j].Equals(otherKingSquare))
@@ -831,9 +822,39 @@ namespace ChessV2
                         chessBoardState.SelectedPiece = selectedPiece;
                         return true;
                     }
+                }*/
+                if(attackingKing(ref chessBoardState))
+                {
+                    chessBoardState.SelectedPiece = selectedPiece;
+                    return true;
                 }
             }
             chessBoardState.SelectedPiece = selectedPiece;
+            return false;
+        }
+
+        // Method to determine of the SelectedPiece is attacking the other players king 
+        public bool attackingKing(ref ChessBoardState chessBoardState)
+        {
+            // Switch Condition to test which piece is selected.
+            switch (chessBoardState.SelectedPiece.piece)
+            {
+                // return if the piece is attacking the other players king.
+                case Pieces.bb: return BishopMoves.attackingKing(ref chessBoardState);
+                case Pieces.bk: return KingMoves.attackingKing(ref chessBoardState);
+                case Pieces.bn: return KnightMoves.attakingKing(ref chessBoardState);
+                case Pieces.bp: return PawnMoves.attakingKing(ref chessBoardState);
+                case Pieces.bq: return QueenMoves.attackingKing(ref chessBoardState);
+                case Pieces.br: return RookMoves.attackingKing(ref chessBoardState);
+
+                case Pieces.wb: return BishopMoves.attackingKing(ref chessBoardState);
+                case Pieces.wk: return KingMoves.attackingKing(ref chessBoardState);
+                case Pieces.wn: return KnightMoves.attakingKing(ref chessBoardState);
+                case Pieces.wp: return PawnMoves.attakingKing(ref chessBoardState);
+                case Pieces.wq: return QueenMoves.attackingKing(ref chessBoardState);
+                case Pieces.wr: return RookMoves.attackingKing(ref chessBoardState);
+            }
+
             return false;
         }
 

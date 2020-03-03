@@ -41,7 +41,7 @@ namespace ChessV2
             // Initialize the Player true = white, false = black.
             Player = player;
 
-            // Initialize BoardDepth to 4.
+            // Initialize BoardDepth.
             BoardDepth = 4;
 
             // ThreadStart variable initializes with the start method which the Thread will run.
@@ -111,13 +111,15 @@ namespace ChessV2
                             Moves += BestBoardValue[i] + " ";
                         }
 
-                        Console.WriteLine($"Player: {ChessBoard.BoardState.WhitesMove} miniMaxBestMove: {Moves}");
+                        //Console.WriteLine($"Player: {ChessBoard.BoardState.WhitesMove} miniMaxBestMoves: {Moves}");
 
                         // Update the ChessDatabase with the best move found.
                         dbUpdateAddRecord(boardState, BoardDepth, Moves);
 
                         // Declare and initialize dbMove to get a possible best move found by the ChessDatabase.
                         dbBestMove = dbRetrieveMove(boardState);
+
+                        Console.WriteLine($"Player: {ChessBoard.BoardState.WhitesMove} miniMax Chosen: {dbBestMove[0]} {dbBestMove[1]}");
 
                         // Change the BoardState base on the bestMove
                         ChessBoard.ChangeBoardState(dbBestMove[0]);
@@ -180,7 +182,7 @@ namespace ChessV2
                 if (ChessBoard.BoardState.WhitesMove)
                 {
                     // Declare and initialize moveS to be a possible white move.
-                     moveS= MoveSplit[0].Trim("White ".ToCharArray());
+                     moveS = MoveSplit[0].Trim("White ".ToCharArray());
                 }
                 else
                 {
@@ -192,6 +194,15 @@ namespace ChessV2
                 {
                     // Set bestMove to the move found in the database.
                     int[] Moves = moveS.Split(' ').Select(m => int.Parse(m)).ToArray();
+
+                    string moveStr = "Player: " + ChessBoard.BoardState.WhitesMove + " bestMoves ";
+
+                    foreach (int i in Moves)
+                    {
+                        moveStr += i + " ";
+                    }
+
+                    Console.WriteLine(moveStr);
 
                     // Delare Random to find a random best move.
                     Random rng = new Random();
@@ -261,7 +272,7 @@ namespace ChessV2
                 // Get the Moves string to be updated.
                 string dbMoves = tbl.Rows[0]["Moves"].ToString();
                 // Declare MoveSplit string array to hold the split of the two players moves.
-                string[] MoveSplit = dbMoves.Split("Black".ToCharArray());
+                string[] MoveSplit = dbMoves.Split("Black".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
                 // Declare string to hold the SQL UPDATE query
                 string updateSQL = "";
 
@@ -312,18 +323,18 @@ namespace ChessV2
                 // Initiaize value array to hold the best board value and potentially the best move.
                 List<double> value = new List<double>(); value.Add(double.MinValue); 
                 // Create ChessPiece array to iterate through Whites pieces to find the best move.
-                List<ChessPiece> pieces = new List<ChessPiece>();
+               /* List<ChessPiece> pieces = new List<ChessPiece>();
                 // Add each of whites pieces to the pieces array.
                 foreach(ChessPiece piece in currentBoard.WhitePieces)
                 {
                     pieces.Add(new ChessPiece(piece.piece, piece.square.row, piece.square.column));
-                }
+                }*/
 
                 // Initialize variable to the given alpha.
                 double a = alpha;
 
                 // Iterate through pieces to find best move.
-                foreach(ChessPiece piece in pieces)
+                foreach(ChessPiece piece in currentBoard.WhitePieces)
                 {
                     // set Selected piece to piece.
                     currentBoard.SelectedPiece = piece;
@@ -382,18 +393,18 @@ namespace ChessV2
                 // Initiaize value array to hold the best board value and potentially the best move.
                 List<double> value = new List<double>(); value.Add(double.MaxValue);
                 // Create ChessPiece array to iterate through Whites pieces to find the best move.
-                List<ChessPiece> pieces = new List<ChessPiece>();
+               /* List<ChessPiece> pieces = new List<ChessPiece>();
                 // Add each of whites pieces to the pieces array.
                 foreach (ChessPiece piece in currentBoard.BlackPieces)
                 {
                     pieces.Add(new ChessPiece(piece.piece, piece.square.row, piece.square.column));
-                }
+                }*/
 
                 // Initialize variable to the given beta.
                 double b = beta;
 
                 // Iterate through pieces to find best move.
-                foreach (ChessPiece piece in pieces)
+                foreach (ChessPiece piece in currentBoard.BlackPieces)
                 {
                     // set Selected piece to piece.
                     currentBoard.SelectedPiece = piece;

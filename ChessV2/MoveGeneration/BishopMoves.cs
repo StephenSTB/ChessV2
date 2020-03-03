@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using static ChessV2.ChessBoardModel;
 
 namespace ChessV2
 {
@@ -57,23 +57,23 @@ namespace ChessV2
         }
 
         // Returns the potential Bishop moves from th SelectedPiece in the given ChessBoardState.
-        public List<ChessBoardModel.Square> getPotentialMoves(ref ChessBoardModel.ChessBoardState chessBoardState)
+        public List<Square> getPotentialMoves(ref ChessBoardState chessBoardState)
         {
-            List<ChessBoardModel.Square> potentialMoves = new List<ChessBoardModel.Square>();
+            List<Square> potentialMoves = new List<Square>();
 
-            ChessBoardModel.Square square = chessBoardState.SelectedPiece.square;
+            Square square = chessBoardState.SelectedPiece.square;
 
 
             // First Diagonal
             for (int i = 1; (square.row - i >= 0) && (square.column - i >= 0); i++)
             {
-                ChessBoardModel.Square s = new ChessBoardModel.Square(square.row - i, square.column - i);
-                if (chessBoardState.Board[square.row - i, square.column - i] == ChessBoardModel.Pieces.blnk)
+                Square s = new Square(square.row - i, square.column - i);
+                if (chessBoardState.Board[square.row - i, square.column - i] == Pieces.blnk)
                 {
                     potentialMoves.Add(s);
                     continue;
                 }
-                else if (ChessBoardModel.otherPlayerPiece(s, ref chessBoardState))
+                else if (otherPlayerPiece(s, ref chessBoardState))
                 {
                     potentialMoves.Add(s);
                     break;
@@ -84,13 +84,13 @@ namespace ChessV2
             // Second Diagonal
             for (int i = 1; (square.row - i >= 0) && (square.column + i < 8); i++)
             {
-                ChessBoardModel.Square s = new ChessBoardModel.Square(square.row - i, square.column + i);
-                if (chessBoardState.Board[square.row - i, square.column + i] == ChessBoardModel.Pieces.blnk)
+                Square s = new Square(square.row - i, square.column + i);
+                if (chessBoardState.Board[square.row - i, square.column + i] == Pieces.blnk)
                 {
                     potentialMoves.Add(s);
                     continue;
                 }
-                else if (ChessBoardModel.otherPlayerPiece(s, ref chessBoardState))
+                else if (otherPlayerPiece(s, ref chessBoardState))
                 {
                     potentialMoves.Add(s);
                     break;
@@ -101,13 +101,13 @@ namespace ChessV2
             // Third Diagonal
             for (int i = 1; (square.row + i < 8) && (square.column + i < 8); i++)
             {
-                ChessBoardModel.Square s = new ChessBoardModel.Square(square.row + i, square.column + i);
-                if (chessBoardState.Board[square.row + i, square.column + i] == ChessBoardModel.Pieces.blnk)
+                Square s = new Square(square.row + i, square.column + i);
+                if (chessBoardState.Board[square.row + i, square.column + i] == Pieces.blnk)
                 {
                     potentialMoves.Add(s);
                     continue;
                 }
-                else if (ChessBoardModel.otherPlayerPiece(s, ref chessBoardState))
+                else if (otherPlayerPiece(s, ref chessBoardState))
                 {
                     potentialMoves.Add(s);
                     break;
@@ -118,13 +118,13 @@ namespace ChessV2
             // Forth Diagonal
             for (int i = 1; (square.row + i < 8) && (square.column - i >= 0); i++)
             {
-                ChessBoardModel.Square s = new ChessBoardModel.Square(square.row + i, square.column - i);
-                if (chessBoardState.Board[square.row + i, square.column - i] == ChessBoardModel.Pieces.blnk)
+                Square s = new Square(square.row + i, square.column - i);
+                if (chessBoardState.Board[square.row + i, square.column - i] == Pieces.blnk)
                 {
                     potentialMoves.Add(s);
                     continue;
                 }
-                else if (ChessBoardModel.otherPlayerPiece(s, ref chessBoardState))
+                else if (otherPlayerPiece(s, ref chessBoardState))
                 {
                     potentialMoves.Add(s);
                     break;
@@ -138,6 +138,104 @@ namespace ChessV2
             }*/
 
             return potentialMoves;
+        }
+
+        public bool attackingKing(ref ChessBoardState chessBoardState)
+        {
+            // Declare otherKingSquare to be the square the other players king is on.
+            Square otherKingSquare = chessBoardState.WhitesMove ? chessBoardState.BlackKingSquare : chessBoardState.WhiteKingSquare;
+
+            // Declare and initialize the bishop square to be the square of the selected piece.
+            Square bishopSquare = chessBoardState.SelectedPiece.square;
+
+            // Condition to test if the other players king is on a diagonal of the bishop.
+            if (Math.Abs(bishopSquare.row - otherKingSquare.row) == Math.Abs(bishopSquare.column - otherKingSquare.column))
+            {
+                // Condition to test if the king is on the First or Second diagonal.
+                if ((otherKingSquare.row < bishopSquare.row))
+                {
+                    // Condition to test if the king is on the First diagonal.
+                    if ((otherKingSquare.column < bishopSquare.column))
+                    {
+                        // First Diagonal Loop
+                        for (int i = 1; (bishopSquare.row - i >= 0) && (bishopSquare.column - i >= 0); i++)
+                        {
+                            // Condition to test if the square holds a blnk piece.
+                            if (chessBoardState.Board[bishopSquare.row - i, bishopSquare.column - i] == Pieces.blnk)
+                            {
+                                continue;
+                            }
+                            // Condition to test if the square holds the other king piece.
+                            else if (bishopSquare.row - i == otherKingSquare.row && bishopSquare.column - i == otherKingSquare.column)
+                            {
+                                return true; // The king is attacked by the bishop return true.
+                            }
+                            return false;
+                        }
+                    }
+                    else  // The king is on the Second diagonal.
+                    {
+                        // Second Diagonal Loop
+                        for (int i = 1; (bishopSquare.row - i >= 0) && (bishopSquare.column + i < 8); i++)
+                        {
+                            // Condition to test if the square holds a blnk piece.
+                            if (chessBoardState.Board[bishopSquare.row - i, bishopSquare.column + i] == Pieces.blnk)
+                            {
+                                continue;
+                            }
+                            // Condition to test if the square holds the other king piece.
+                            else if (bishopSquare.row - i == otherKingSquare.row && bishopSquare.column + i == otherKingSquare.column)
+                            {
+                                return true; // The king is attacked by the bishop return true.
+                            }
+                            return false;
+                        }
+                    }
+                }
+               
+                // Condition to test if the king is on the Thrid or Fourth diagonal.
+                if ((otherKingSquare.row > bishopSquare.row) )
+                {
+                    // Condition to test if the king is on the Third diagonal.
+                    if ((otherKingSquare.column > bishopSquare.column))
+                    {
+                        // Third Diagonal Loop
+                        for (int i = 1; (bishopSquare.row + i < 8) && (bishopSquare.column + i < 8); i++)
+                        {
+                            // Condition to test if the square holds a blnk piece
+                            if (chessBoardState.Board[bishopSquare.row + i, bishopSquare.column + i] == Pieces.blnk)
+                            {
+                                continue;
+                            }
+                            // Condition to test if the square holds the other king piece.
+                            else if (bishopSquare.row + i == otherKingSquare.row && bishopSquare.column + i == otherKingSquare.column)
+                            {
+                                return true; // The king is attacked by the bishop return true.
+                            }
+                            return false;
+                        }
+                    }
+                    else // The king is on the Fourth diagonal.
+                    {
+                        // Fourth Diagonal Loop
+                        for (int i = 1; (bishopSquare.row + i < 8) && (bishopSquare.column - i < 8); i++)
+                        {
+                            // Condition to test if the square holds a blnk piece
+                            if (chessBoardState.Board[bishopSquare.row + i, bishopSquare.column - i] == Pieces.blnk)
+                            {
+                                continue;
+                            }
+                            // Condition to test if the square holds the other king piece.
+                            else if (bishopSquare.row + i == otherKingSquare.row && bishopSquare.column - i == otherKingSquare.column)
+                            {
+                                return true; // The king is attacked by the bishop return true.
+                            }
+                            return false;
+                        }
+                    }
+                }
+            }
+            return false;
         }
 
     }

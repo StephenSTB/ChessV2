@@ -3,37 +3,38 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static ChessV2.ChessBoardModel;
 
 namespace ChessV2
 {
     public class KingMoves
     {
-        public List<ChessBoardModel.Square> getPotentialMoves(ref ChessBoardModel.ChessBoardState  chessBoardState)
+        public List<Square> getPotentialMoves(ref ChessBoardState  chessBoardState)
         {
-            List<ChessBoardModel.Square> potentialMoves = new List<ChessBoardModel.Square>();
+            List<Square> potentialMoves = new List<Square>();
 
-            ChessBoardModel.Square square = chessBoardState.SelectedPiece.square;
+            Square square = chessBoardState.SelectedPiece.square;
 
             // Top 3 Squares
             if (square.row - 1 >= 0)
             {
-                ChessBoardModel.Square s = new ChessBoardModel.Square(square.row - 1, square.column);
-                if (chessBoardState.Board[square.row - 1, square.column] == ChessBoardModel.Pieces.blnk || ChessBoardModel.otherPlayerPiece(s, ref chessBoardState))
+                Square s = new Square(square.row - 1, square.column);
+                if (chessBoardState.Board[square.row - 1, square.column] == Pieces.blnk || otherPlayerPiece(s, ref chessBoardState))
                 {                 
                     potentialMoves.Add(s);
                 }
                 if(square.column - 1 >= 0)
                 {
-                    s = new ChessBoardModel.Square(square.row - 1, square.column - 1);
-                    if (chessBoardState.Board[square.row - 1, square.column - 1] == ChessBoardModel.Pieces.blnk || ChessBoardModel.otherPlayerPiece(s, ref chessBoardState))
+                    s = new Square(square.row - 1, square.column - 1);
+                    if (chessBoardState.Board[square.row - 1, square.column - 1] == Pieces.blnk || otherPlayerPiece(s, ref chessBoardState))
                     {
                         potentialMoves.Add(s);
                     }
                 }
                 if (square.column + 1 < 8)
                 {
-                    s = new ChessBoardModel.Square(square.row - 1, square.column + 1);
-                    if (chessBoardState.Board[square.row - 1, square.column + 1] == ChessBoardModel.Pieces.blnk || ChessBoardModel.otherPlayerPiece(s, ref chessBoardState))
+                    s = new Square(square.row - 1, square.column + 1);
+                    if (chessBoardState.Board[square.row - 1, square.column + 1] == Pieces.blnk || otherPlayerPiece(s, ref chessBoardState))
                     {
                         potentialMoves.Add(s);
                     }
@@ -43,23 +44,23 @@ namespace ChessV2
             // Bottom 3 Squares
             if (square.row + 1 < 8)
             {
-                ChessBoardModel.Square s = new ChessBoardModel.Square(square.row + 1, square.column);
-                if (chessBoardState.Board[square.row + 1, square.column] == ChessBoardModel.Pieces.blnk || ChessBoardModel.otherPlayerPiece(s, ref chessBoardState))
+                Square s = new Square(square.row + 1, square.column);
+                if (chessBoardState.Board[square.row + 1, square.column] == Pieces.blnk || otherPlayerPiece(s, ref chessBoardState))
                 {
                     potentialMoves.Add(s);
                 }
                 if (square.column - 1 >= 0)
                 {
-                    s = new ChessBoardModel.Square(square.row + 1, square.column - 1);
-                    if (chessBoardState.Board[square.row + 1, square.column - 1] == ChessBoardModel.Pieces.blnk || ChessBoardModel.otherPlayerPiece(s, ref chessBoardState))
+                    s = new Square(square.row + 1, square.column - 1);
+                    if (chessBoardState.Board[square.row + 1, square.column - 1] == Pieces.blnk || otherPlayerPiece(s, ref chessBoardState))
                     {
                         potentialMoves.Add(s);
                     }
                 }
                 if (square.column + 1 < 8)
                 {
-                    s = new ChessBoardModel.Square(square.row + 1, square.column + 1);
-                    if (chessBoardState.Board[square.row + 1, square.column + 1] == ChessBoardModel.Pieces.blnk || ChessBoardModel.otherPlayerPiece(s, ref chessBoardState))
+                    s = new Square(square.row + 1, square.column + 1);
+                    if (chessBoardState.Board[square.row + 1, square.column + 1] == Pieces.blnk || otherPlayerPiece(s, ref chessBoardState))
                     {
                         potentialMoves.Add(s);
                     }
@@ -70,8 +71,8 @@ namespace ChessV2
 
             if (square.column - 1 >= 0)
             {
-                ChessBoardModel.Square s = new ChessBoardModel.Square(square.row, square.column -1);
-                if (chessBoardState.Board[square.row , square.column - 1] == ChessBoardModel.Pieces.blnk || ChessBoardModel.otherPlayerPiece(s, ref chessBoardState))
+                Square s = new Square(square.row, square.column -1);
+                if (chessBoardState.Board[square.row , square.column - 1] == Pieces.blnk || otherPlayerPiece(s, ref chessBoardState))
                 {
                     potentialMoves.Add(s);
                 }
@@ -79,8 +80,8 @@ namespace ChessV2
 
             if (square.column + 1 < 8)
             {
-                ChessBoardModel.Square s = new ChessBoardModel.Square(square.row, square.column + 1);
-                if (chessBoardState.Board[square.row , square.column + 1] == ChessBoardModel.Pieces.blnk || ChessBoardModel.otherPlayerPiece(s, ref chessBoardState))
+                Square s = new Square(square.row, square.column + 1);
+                if (chessBoardState.Board[square.row , square.column + 1] == Pieces.blnk || otherPlayerPiece(s, ref chessBoardState))
                 {
                     potentialMoves.Add(s);
                 }
@@ -99,10 +100,10 @@ namespace ChessV2
                 // King Side Castle
                 if (!RooksMoved[0])
                 {
-                    ChessBoardModel.Square KingSquare = chessBoardState.WhitesMove ? chessBoardState.WhiteKingSquare : chessBoardState.BlackKingSquare;
-                    if (chessBoardState.Board[KingSquare.row, KingSquare.column + 1] == ChessBoardModel.Pieces.blnk && chessBoardState.Board[KingSquare.row, KingSquare.column + 2] == ChessBoardModel.Pieces.blnk)
+                    Square KingSquare = chessBoardState.WhitesMove ? chessBoardState.WhiteKingSquare : chessBoardState.BlackKingSquare;
+                    if (chessBoardState.Board[KingSquare.row, KingSquare.column + 1] == Pieces.blnk && chessBoardState.Board[KingSquare.row, KingSquare.column + 2] == Pieces.blnk)
                     {
-                        ChessBoardModel.Square s = new ChessBoardModel.Square(KingSquare.row, KingSquare.column + 2);
+                        Square s = new Square(KingSquare.row, KingSquare.column + 2);
                         potentialMoves.Add(s);
                     }
                 }
@@ -110,10 +111,10 @@ namespace ChessV2
                 // Queen Side Castle
                 if (!RooksMoved[1])
                 {
-                    ChessBoardModel.Square KingSquare = chessBoardState.WhitesMove ? chessBoardState.WhiteKingSquare : chessBoardState.BlackKingSquare;
-                    if(chessBoardState.Board[KingSquare.row, KingSquare.column - 1] == ChessBoardModel.Pieces.blnk && chessBoardState.Board[KingSquare.row, KingSquare.column - 2] == ChessBoardModel.Pieces.blnk && chessBoardState.Board[KingSquare.row, KingSquare.column - 3] == ChessBoardModel.Pieces.blnk)
+                    Square KingSquare = chessBoardState.WhitesMove ? chessBoardState.WhiteKingSquare : chessBoardState.BlackKingSquare;
+                    if(chessBoardState.Board[KingSquare.row, KingSquare.column - 1] == Pieces.blnk && chessBoardState.Board[KingSquare.row, KingSquare.column - 2] == Pieces.blnk && chessBoardState.Board[KingSquare.row, KingSquare.column - 3] == Pieces.blnk)
                     {
-                        ChessBoardModel.Square s = new ChessBoardModel.Square(KingSquare.row, KingSquare.column - 2);
+                        Square s = new Square(KingSquare.row, KingSquare.column - 2);
                         potentialMoves.Add(s);
                     }
 
@@ -121,6 +122,19 @@ namespace ChessV2
             }
 
             return potentialMoves;
-        } 
+        }
+
+        internal bool attackingKing(ref ChessBoardState chessBoardState)
+        {
+            // Declare otherKingSquare to be the square the other players king is on.
+            Square otherKingSquare = chessBoardState.WhitesMove ? chessBoardState.BlackKingSquare : chessBoardState.WhiteKingSquare;
+
+            // Condition to test if the king is one square from the other king.
+            if(Math.Abs(chessBoardState.SelectedPiece.square.row - otherKingSquare.row) <= 1 && Math.Abs(chessBoardState.SelectedPiece.square.column - otherKingSquare.column) <= 1)
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }
